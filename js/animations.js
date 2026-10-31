@@ -1,96 +1,171 @@
 
-/* FILE: js/animations.js */
-
-/* =========================================
-   PORTFOLIO-M V2.0
-   ANIMATION CONTROLLER
-   Brand: MAGISTO TECHY
-========================================= */
+/* =========================================================
+   FILE: js/animations.js
+   PROJECT: PORTFOLIO-M V2.0
+   PURPOSE: Scroll reveal and entrance animations
+   ========================================================= */
 
 (() => {
-    "use strict";
+  "use strict";
 
-    function initAnimations() {
-        // Prevent duplicate initialization.
-        if (document.documentElement.dataset.animationsReady === "true") {
-            return;
-        }
+  const CONFIG = {
+    revealSelector: ".reveal, .reveal-left, .reveal-right",
+    staggerSelector: "[data-stagger]",
+    visibleClass: "is-visible",
+    initializedAttribute: "data-animations-ready",
+    staggerDelay: 100,
+    observerThreshold: 0.12,
+    observerRootMargin: "0px 0px -50px 0px"
+  };
 
-        document.documentElement.dataset.animationsReady = "true";
+  let observer = null;
+  let initialized = false;
 
-        // Check accessibility preferences.
-        const reducedMotion = window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-        ).matches;
-
-        const revealElements = document.querySelectorAll(
-            ".reveal, .reveal-left, .reveal-right"
-        );
-
-        // Make every reveal element visible if motion is disabled.
-        if (reducedMotion || !("IntersectionObserver" in window)) {
-            revealElements.forEach((element) => {
-                element.classList.add("is-visible");
-            });
-
-            console.info("Animations initialized without scroll effects.");
-            return;
-        }
-
-        // Observe elements as they enter the viewport.
-        const observer = new IntersectionObserver(
-            (entries, currentObserver) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("is-visible");
-
-                        // Animate only once.
-                        currentObserver.unobserve(entry.target);
-                    }
-                });
-            },
-            {
-                threshold: 0.12,
-                rootMargin: "0px 0px -40px 0px"
-            }
-        );
-
-        revealElements.forEach((element) => {
-            observer.observe(element);
-        });
-
-        // Add staggered animation delays to grouped cards.
-        const staggerGroups = document.querySelectorAll(
-            "[data-stagger]"
-        );
-
-        staggerGroups.forEach((group) => {
-            const children = Array.from(group.children);
-
-            children.forEach((child, index) => {
-                const delay = Math.min(index * 100, 500);
-
-                child.style.transitionDelay = `${delay}ms`;
-            });
-        });
-
-        console.info(
-            `${revealElements.length} scroll-reveal elements initialized.`
-        );
+  /**
+   * Wait for reusable components without missing
+   * the event if they have already loaded.
+   */
+  function onComponentsReady(callback) {
+    if (
+      document.body.dataset.componentsLoaded === "true" ||
+      document.querySelector(".navbar, .footer, [data-component]")
+    ) {
+      callback();
+      return;
     }
 
-    // Initialize after all HTML components have loaded.
     document.addEventListener(
-        "portfolio:components-loaded",
-        initAnimations,
-        { once: true }
+      "portfolio:components-loaded",
+      callback,
+      { once: true }
+    );
+  }
+
+  /**
+   * Immediately reveal elements when animations
+   * are unavailable or reduced motion is preferred.
+   */
+  function revealImmediately(elements) {
+    elements.forEach((element) => {
+      element.classList.add(CONFIG.visibleClass);
+    });
+  }
+
+  /**
+   * Apply staggered transition delays to children.
+   */
+  function initializeStaggerGroups() {
+    const groups = document.querySelectorAll(
+      CONFIG.staggerSelector
     );
 
-    // Handle pages without component placeholders.
+    groups.forEach((group) => {
+      const children = Array.from(group.children);
+
+      children.forEach((child, index) => {
+        child.style.transitionDelay =
+          `${index * CONFIG.staggerDelay}ms`;
+      });
+    });
+  }
+
+  /**
+   * Initialize scroll reveal observation.
+   */
+  function initializeRevealElements() {
+    const elements = Array.from(
+      document.querySelectorAll(CONFIG.revealSelector)
+    );
+
+    if (!elements.length) return;
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
     if (
-        document.documentElement.dataset.componentsLoaded === "true"
+      reducedMotion ||
+      !("IntersectionObserver" in window)
     ) {
-        initAnimations();
+      revealImmediately(elements);
+      return;
     }
 
+    observer = new IntersectionObserver(
+      (entries, currentObserver) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          entry.target.classList.add(CONFIG.visibleClass);
+
+          // Stop observing after the reveal animation.
+          currentObserver.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: CONFIG.observerThreshold,
+        rootMargin: CONFIG.observerRootMargin
+      }
+    );
+
+    elements.forEach((element) => {
+      if (element.classList.contains(CONFIG.visibleClass)) {
+        return;
+      }
+
+      observer.observe(element);
+    });
+  }
+
+  /**
+   * Initialize all animation features once.
+   */
+  function initializeAnimations() {
+    if (initialized) return;
+
+    if (
+      document.body.dataset.animationsReady === "true"
+    ) {
+      initialized = true;
+      return;
+    }
+
+    initialized = true;
+    document.body.dataset.animationsReady = "true";
+
+    initializeStaggerGroups();
+    initializeRevealElements();
+  }
+
+  /**
+   * Re-observe newly inserted reveal elements.
+   * Useful if another script adds content later.
+   */
+  function refreshAnimations() {
+    if (!initialized) return;
+
+    const elements = document.querySelectorAll(
+      CONFIG.revealSelector
+    );
+
+    if (!observer) {
+      revealImmediately(Array.from(elements));
+      return;
+    }
+
+    elements.forEach((element) => {
+      if (
+        !element.classList.contains(CONFIG.visibleClass)
+      ) {
+        observer.observe(element);
+      }
+    });
+  }
+
+  // Public refresh method for future dynamic sections.
+  window.PortfolioAnimations = {
+    refresh: refreshAnimations
+  };
+
+  onComponentsReady(initializeAnimations);
 })();
