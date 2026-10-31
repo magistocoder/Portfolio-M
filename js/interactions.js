@@ -2,7 +2,7 @@
 /* =========================================================
    FILE: js/interactions.js
    PROJECT: PORTFOLIO-M V2.0
-   PURPOSE: General UI interactions and user experience
+   PURPOSE: General UI interactions
    ========================================================= */
 
 (() => {
@@ -11,14 +11,10 @@
   let initialized = false;
 
   /**
-   * Wait for reusable components.
-   * Handles scripts running before or after component loading.
+   * Wait until component loading has actually finished.
    */
   function onComponentsReady(callback) {
-    if (
-      document.body.dataset.componentsLoaded === "true" ||
-      document.querySelector(".navbar, .footer, [data-component]")
-    ) {
+    if (document.body.dataset.componentsLoaded === "true") {
       callback();
       return;
     }
@@ -31,42 +27,46 @@
   }
 
   /**
-   * Update copyright year automatically.
+   * Update all copyright year placeholders.
    */
   function updateCurrentYear() {
-    const currentYear = new Date().getFullYear();
+    const year = new Date().getFullYear();
 
-    document.querySelectorAll("[data-current-year]").forEach((element) => {
-      element.textContent = currentYear;
-    });
+    document.querySelectorAll("[data-current-year]").forEach(
+      (element) => {
+        element.textContent = year;
+      }
+    );
   }
 
   /**
-   * Back-to-top button.
+   * Initialize back-to-top functionality.
    */
   function initializeBackToTop() {
     const button = document.querySelector("[data-back-to-top]");
 
-    if (!button) return;
+    if (!button || button.dataset.backToTopReady === "true") {
+      return;
+    }
 
-    const visibilityThreshold = 400;
+    button.dataset.backToTopReady = "true";
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
     const updateVisibility = () => {
-      const shouldShow = window.scrollY > visibilityThreshold;
+      const visible = window.scrollY > 400;
 
-      button.classList.toggle("is-visible", shouldShow);
-      button.setAttribute("aria-hidden", String(!shouldShow));
-      button.tabIndex = shouldShow ? 0 : -1;
+      button.classList.toggle("is-visible", visible);
+      button.setAttribute("aria-hidden", String(!visible));
+      button.tabIndex = visible ? 0 : -1;
     };
 
     button.addEventListener("click", () => {
       window.scrollTo({
         top: 0,
-        behavior: window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches
-          ? "instant"
-          : "smooth"
+        behavior: reducedMotion ? "auto" : "smooth"
       });
     });
 
@@ -78,9 +78,15 @@
   }
 
   /**
-   * Smooth scrolling for same-page anchor links.
+   * Smooth scrolling for same-page links.
    */
   function initializeSmoothScrolling() {
+    if (document.body.dataset.smoothScrollReady === "true") {
+      return;
+    }
+
+    document.body.dataset.smoothScrollReady = "true";
+
     document.addEventListener("click", (event) => {
       const link = event.target.closest('a[href^="#"]');
 
@@ -102,52 +108,49 @@
 
       event.preventDefault();
 
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
       target.scrollIntoView({
-        behavior: window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches
-          ? "instant"
-          : "smooth",
+        behavior: reducedMotion ? "auto" : "smooth",
         block: "start"
       });
 
-      // Keep the URL in sync without triggering a page jump.
-      if (window.history && window.history.replaceState) {
+      if (window.history?.replaceState) {
         window.history.replaceState(null, "", href);
       }
     });
   }
 
   /**
-   * External links opened in new tabs should be secure.
+   * Secure external links.
    */
   function secureExternalLinks() {
-    document.querySelectorAll('a[target="_blank"]').forEach((link) => {
-      const relValues = new Set(
-        (link.getAttribute("rel") || "")
-          .split(/\s+/)
-          .filter(Boolean)
-      );
+    document.querySelectorAll('a[target="_blank"]').forEach(
+      (link) => {
+        const rel = new Set(
+          (link.getAttribute("rel") || "")
+            .split(/\s+/)
+            .filter(Boolean)
+        );
 
-      relValues.add("noopener");
-      relValues.add("noreferrer");
+        rel.add("noopener");
+        rel.add("noreferrer");
 
-      link.setAttribute("rel", Array.from(relValues).join(" "));
-    });
+        link.setAttribute("rel", Array.from(rel).join(" "));
+      }
+    );
   }
 
   /**
-   * Contact form feedback.
-   *
-   * Native FormSubmit forms are not intercepted.
-   * AJAX feedback is enabled only when data-ajax="true".
+   * Prepare optional AJAX contact forms.
+   * Standard FormSubmit forms are not intercepted.
    */
   function initializeContactForms() {
-    const forms = document.querySelectorAll(
+    document.querySelectorAll(
       'form[data-ajax="true"]'
-    );
-
-    forms.forEach((form) => {
+    ).forEach((form) => {
       if (form.dataset.interactionReady === "true") return;
 
       form.dataset.interactionReady = "true";
@@ -160,7 +163,7 @@
         event.preventDefault();
 
         status.textContent =
-          "AJAX submission is not configured yet. Please use the standard form submission.";
+          "AJAX submission is not configured. Please use standard form submission.";
 
         status.setAttribute("role", "status");
       });
@@ -168,7 +171,7 @@
   }
 
   /**
-   * Initialize the complete interaction system.
+   * Initialize all interactions once.
    */
   function initializeInteractions() {
     if (initialized) return;
@@ -182,14 +185,20 @@
     initializeContactForms();
   }
 
-  // Public refresh function for dynamically inserted content.
+  /**
+   * Refresh elements inserted after initial loading.
+   */
+  function refreshInteractions() {
+    updateCurrentYear();
+    initializeBackToTop();
+    secureExternalLinks();
+    initializeContactForms();
+  }
+
   window.PortfolioInteractions = {
-    refresh() {
-      updateCurrentYear();
-      secureExternalLinks();
-      initializeContactForms();
-    }
+    refresh: refreshInteractions
   };
 
   onComponentsReady(initializeInteractions);
+
 })();
