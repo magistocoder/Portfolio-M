@@ -1,0 +1,29 @@
+
+/* FILE: css/style.css */
+
+/* =========================================
+   PORTFOLIO-M V2.0
+   MASTER STYLESHEET
+   Brand: MAGISTO TECHY
+========================================= */
+
+/* 01 — CSS RESET */
+@import url("./reset.css");
+
+/* 02 — DESIGN TOKENS & VARIABLES */
+@import url("./variables.css");
+
+/* 03 — GLOBAL TYPOGRAPHY & BASE STYLES */
+@import url("./global.css");
+
+/* 04 — PAGE LAYOUT & STRUCTURE */
+@import url("./layout.css");
+
+/* 05 — COMPONENT VISUAL STYLES */
+@import url("./components.css");
+
+/* 06 — ANIMATIONS & MOTION */
+@import url("./animations.css");
+
+/* 07 — RESPONSIVE OPTIMIZATION */
+@import url("./responsive.css");
