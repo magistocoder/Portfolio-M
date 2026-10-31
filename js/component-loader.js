@@ -1,186 +1,179 @@
 
-/* FILE: js/component-loader.js */
-
-/* =========================================
-   PORTFOLIO-M V2.0
-   REUSABLE HTML COMPONENT LOADER
-   Brand: MAGISTO TECHY
-========================================= */
+/* =========================================================
+   FILE: js/component-loader.js
+   PROJECT: PORTFOLIO-M V2.0
+   PURPOSE: Load reusable HTML components
+   ========================================================= */
 
 (() => {
-    "use strict";
+  "use strict";
 
-    // Read the project root from the current page.
-    // Homepage: data-root="./"
-    // Nested pages: data-root="../"
-    const root = document.body.dataset.root || "./";
+  const ROOT = document.body.dataset.root || "./";
+  const COMPONENT_SELECTOR = "[data-component]";
 
-    const componentSlots = document.querySelectorAll(
-        "[data-component]"
+  /**
+   * Keep external URLs, page anchors and absolute URLs unchanged.
+   * Normalize local paths relative to the website root.
+   */
+  function normalizePath(value) {
+    if (!value || typeof value !== "string") {
+      return value;
+    }
+
+    const path = value.trim();
+
+    if (
+      path.startsWith("#") ||
+      path.startsWith("//") ||
+      path.startsWith("/") ||
+      /^[a-z][a-z\d+.-]*:/i.test(path) ||
+      path.startsWith("data:")
+    ) {
+      return value;
+    }
+
+    const cleanPath = path.replace(/^(\.\/|(?:\.\.\/))+/, "");
+
+    return `${ROOT}${cleanPath}`;
+  }
+
+  /**
+   * Normalize paths inside a loaded component.
+   */
+  function normalizeComponentPaths(fragment) {
+    const attributes = [
+      "href",
+      "src",
+      "action",
+      "poster",
+      "data-src"
+    ];
+
+    fragment.querySelectorAll("*").forEach((element) => {
+      attributes.forEach((attribute) => {
+        if (!element.hasAttribute(attribute)) return;
+
+        const originalValue = element.getAttribute(attribute);
+        const normalizedValue = normalizePath(originalValue);
+
+        element.setAttribute(attribute, normalizedValue);
+      });
+    });
+  }
+
+  /**
+   * Load one component into its placeholder.
+   */
+  async function loadComponent(slot) {
+    const componentName = slot.dataset.component;
+
+    if (!componentName || !/^[a-z0-9-]+$/i.test(componentName)) {
+      slot.innerHTML = "<!-- Invalid component name -->";
+
+      return {
+        name: componentName || "unknown",
+        success: false
+      };
+    }
+
+    const componentURL =
+      `${ROOT}components/${componentName}.html`;
+
+    try {
+      const response = await fetch(componentURL, {
+        method: "GET",
+        headers: {
+          "Accept": "text/html"
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP ${response.status}: ${response.statusText}`
+        );
+      }
+
+      const html = await response.text();
+
+      const template = document.createElement("template");
+      template.innerHTML = html.trim();
+
+      normalizeComponentPaths(template.content);
+
+      slot.replaceChildren(
+        template.content.cloneNode(true)
+      );
+
+      slot.dataset.componentLoaded = "true";
+
+      return {
+        name: componentName,
+        success: true
+      };
+
+    } catch (error) {
+      console.error(
+        `Component loading failed: ${componentName}`,
+        error
+      );
+
+      slot.innerHTML = `
+        <div class="component-error" role="status">
+          Component unavailable: ${componentName}
+        </div>
+      `;
+
+      return {
+        name: componentName,
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Load every component placeholder on the page.
+   */
+  async function loadAllComponents() {
+    const slots = Array.from(
+      document.querySelectorAll(COMPONENT_SELECTOR)
     );
 
-    // Resolve local paths inside loaded components.
-    function resolveComponentPath(path) {
-        if (!path || typeof path !== "string") {
-            return path;
+    const results = await Promise.all(
+      slots.map((slot) => loadComponent(slot))
+    );
+
+    const successful = results.filter(
+      (result) => result.success
+    ).length;
+
+    const failed = results.length - successful;
+
+    document.body.dataset.componentsLoaded = "true";
+
+    const event = new CustomEvent(
+      "portfolio:components-loaded",
+      {
+        detail: {
+          results,
+          total: results.length,
+          successful,
+          failed
         }
+      }
+    );
 
-        const value = path.trim();
+    document.dispatchEvent(event);
 
-        // Keep external links, anchors and special URLs unchanged.
-        if (
-            /^(https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(value) ||
-            value.startsWith("#") ||
-            value.startsWith("//") ||
-            value.startsWith("/")
-        ) {
-            return value;
-        }
+    return {
+      results,
+      total: results.length,
+      successful,
+      failed
+    };
+  }
 
-        // Remove leading relative directory markers.
-        const cleanPath = value.replace(/^(\.\.\/|\.\/)+/, "");
-
-        return `${root}${cleanPath}`;
-    }
-
-    // Correct links and media paths inside a component.
-    function normalizeComponentPaths(fragment) {
-        const pathAttributes = [
-            "href",
-            "src",
-            "action",
-            "poster"
-        ];
-
-        fragment.querySelectorAll("*").forEach((element) => {
-            pathAttributes.forEach((attribute) => {
-                if (element.hasAttribute(attribute)) {
-                    const originalPath = element.getAttribute(attribute);
-
-                    element.setAttribute(
-                        attribute,
-                        resolveComponentPath(originalPath)
-                    );
-                }
-            });
-
-            // Also support lazy-loaded images.
-            if (element.hasAttribute("data-src")) {
-                const originalPath = element.getAttribute("data-src");
-
-                element.setAttribute(
-                    "data-src",
-                    resolveComponentPath(originalPath)
-                );
-            }
-        });
-    }
-
-    // Fetch and insert one component.
-    async function loadComponent(slot) {
-        const componentName = slot.dataset.component;
-
-        if (!componentName) {
-            return {
-                name: "unknown",
-                success: false
-            };
-        }
-
-        // Only allow simple component filenames.
-        if (!/^[a-z0-9-]+$/i.test(componentName)) {
-            console.error(
-                `Invalid component name: ${componentName}`
-            );
-
-            slot.textContent = "Component configuration error.";
-
-            return {
-                name: componentName,
-                success: false
-            };
-        }
-
-        const componentURL =
-            `${root}components/${componentName}.html`;
-
-        try {
-            const response = await fetch(componentURL);
-
-            if (!response.ok) {
-                throw new Error(
-                    `HTTP ${response.status}: ${response.statusText}`
-                );
-            }
-
-            const html = await response.text();
-
-            const template = document.createElement("template");
-            template.innerHTML = html.trim();
-
-            normalizeComponentPaths(template.content);
-
-            slot.replaceChildren(template.content.cloneNode(true));
-
-            slot.dataset.componentLoaded = "true";
-
-            return {
-                name: componentName,
-                success: true
-            };
-
-        } catch (error) {
-            console.error(
-                `Failed to load component "${componentName}":`,
-                error
-            );
-
-            slot.textContent =
-                slot.dataset.componentFallback ||
-                `Unable to load ${componentName}. Please refresh the page.`;
-
-            slot.dataset.componentLoaded = "false";
-
-            return {
-                name: componentName,
-                success: false,
-                error
-            };
-        }
-    }
-
-    // Load all components before initializing dependent scripts.
-    async function loadAllComponents() {
-        const results = await Promise.all(
-            Array.from(componentSlots).map(loadComponent)
-        );
-
-        const summary = {
-            total: results.length,
-            loaded: results.filter((item) => item.success).length,
-            failed: results.filter((item) => !item.success).length
-        };
-
-        document.documentElement.dataset.componentsLoaded = "true";
-
-        // Notify other scripts that component loading has finished.
-        document.dispatchEvent(
-            new CustomEvent("portfolio:components-loaded", {
-                detail: {
-                    results,
-                    summary
-                }
-            })
-        );
-
-        console.info(
-            `Portfolio components: ${summary.loaded}/${summary.total} loaded.`
-        );
-
-        return summary;
-    }
-
-    // Expose a promise so main.js can wait for components.
-    window.portfolioComponentsReady = loadAllComponents();
+  // Expose the loading promise for other scripts.
+  window.portfolioComponentsReady = loadAllComponents();
 
 })();
