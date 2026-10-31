@@ -1,149 +1,238 @@
 
+<!--
+  FILE: about.html
+  PROJECT: PORTFOLIO-M V2.0
+  BRAND: MAGISTO TECHY
+  LOCATION: Portfolio-M/pages/about.html
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>About Me | MAGISTO TECHY</title>
-  <meta name="description" content="Discover the story, creative journey, and technology interests behind MAGISTO TECHY.">
+    <meta name="author" content="Abhinand A.S.">
+    <meta name="description" content="Learn more about Abhinand A.S., the creator behind MAGISTO TECHY.">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#080A0B">
 
-  <link rel="stylesheet" href="../css/style.css">
-  <script type="module" src="../js/main.js"></script>
+    <title>About Me | MAGISTO TECHY</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body data-root="../">
 
-  <a class="skip-link" href="#main">Skip to content</a>
+    <!-- Accessibility -->
+    <a href="#main-content" class="skip-link">
+        Skip to content
+    </a>
 
-  <div data-component="navbar"></div>
+    <!-- Navigation Component -->
+    <div data-component="navbar"></div>
 
-  <main id="main">
+    <main id="main-content">
 
-    <section class="page-hero">
-      <div class="container">
-        <p class="eyebrow">GET TO KNOW ME</p>
+        <!-- Page Hero -->
+        <section class="page-hero section">
+            <div class="container">
 
-        <h1>
-          More Than Just
-          <span class="text-accent">Technology.</span>
-        </h1>
+                <div class="section-heading reveal">
+                    <span class="eyebrow">GET TO KNOW ME</span>
 
-        <p class="section-description">
-          I'm Abhinand A.S., the creator behind MAGISTO TECHY.
-          I explore technology, create digital content, and turn
-          complicated tech concepts into simple experiences.
-        </p>
-      </div>
-    </section>
+                    <h1>
+                        The person behind
+                        <span class="text-gradient">the technology.</span>
+                    </h1>
 
-    <section class="about-intro section-padding">
-      <div class="container about-grid">
+                    <p>
+                        I'm Abhinand A.S. — a technology content creator
+                        and UGC creator interested in making technology
+                        more engaging, accessible and creative.
+                    </p>
+                </div>
 
-        <div class="about-image">
-          <img
-            src="../assets/images/portrait.png"
-            alt="Portrait of Abhinand A.S."
-            loading="lazy"
-          >
-        </div>
+            </div>
+        </section>
 
-        <div class="about-content">
-          <p class="eyebrow">MY STORY</p>
+        <!-- About Profile -->
+        <section class="section about-profile">
+            <div class="container">
 
-          <h2>
-            Creating. Exploring.
-            <span class="text-accent">Innovating.</span>
-          </h2>
+                <div class="two-column about-profile-grid">
 
-          <p>
-            My journey started with a simple curiosity about technology
-            and digital creativity. Over time, that curiosity developed
-            into MAGISTO TECHY — a platform where I share technology
-            insights, useful digital tools, and creative content.
-          </p>
+                    <div class="about-profile-image reveal-left">
+                        <img
+                            src="../assets/images/portrait.png"
+                            alt="Portrait of Abhinand A.S."
+                            loading="lazy"
+                        >
+                    </div>
 
-          <p>
-            I enjoy exploring new gadgets, experimenting with AI tools,
-            understanding digital trends, and creating content that
-            makes technology easier to understand.
-          </p>
+                    <div class="about-profile-content reveal-right">
 
-          <p>
-            My goal is to build a strong digital identity through
-            creativity, consistency, and meaningful collaborations.
-          </p>
-        </div>
+                        <span class="eyebrow">MY INTRODUCTION</span>
 
-      </div>
-    </section>
+                        <h2>
+                            Hello, I'm
+                            <span class="text-gradient">Abhinand.</span>
+                        </h2>
 
-    <section class="about-focus section-padding">
-      <div class="container">
+                        <p>
+                            I'm the creator behind MAGISTO TECHY,
+                            a digital platform focused on technology,
+                            gadgets, applications and useful digital tools.
+                        </p>
 
-        <div class="section-heading">
-          <p class="eyebrow">WHAT I DO</p>
-          <h2>My Creative <span class="text-accent">Focus</span></h2>
-        </div>
+                        <p>
+                            I enjoy exploring new technology, experimenting
+                            with creative tools and turning complex ideas
+                            into content that people can understand.
+                        </p>
 
-        <div class="focus-grid">
+                        <p>
+                            My work also extends into user-generated content,
+                            product-focused storytelling and collaborations
+                            with brands.
+                        </p>
 
-          <article class="focus-card">
-            <span class="focus-number">01</span>
-            <h3>Technology Content</h3>
-            <p>
-              Creating informative content around gadgets,
-              technology updates, and useful digital tools.
-            </p>
-          </article>
+                        <div class="about-profile-actions">
+                            <a href="projects.html" class="btn btn-primary">
+                                Explore My Work
+                                <span aria-hidden="true">↗</span>
+                            </a>
 
-          <article class="focus-card">
-            <span class="focus-number">02</span>
-            <h3>UGC Creation</h3>
-            <p>
-              Developing engaging product-focused content
-              that helps brands connect with their audience.
-            </p>
-          </article>
+                            <a href="contact.html" class="btn btn-outline">
+                                Contact Me
+                            </a>
+                        </div>
 
-          <article class="focus-card">
-            <span class="focus-number">03</span>
-            <h3>Creative Editing</h3>
-            <p>
-              Exploring video editing, visual storytelling,
-              and modern content production techniques.
-            </p>
-          </article>
+                    </div>
 
-        </div>
-      </div>
-    </section>
+                </div>
 
-    <section class="about-vision section-padding">
-      <div class="container vision-content">
-        <p class="eyebrow">THE VISION</p>
+            </div>
+        </section>
 
-        <h2>
-          Making Technology
-          <span class="text-accent">Understandable.</span>
-        </h2>
+        <!-- Personal Journey -->
+        <section class="section journey-section">
+            <div class="container">
 
-        <p>
-          I believe technology should be accessible, useful,
-          and exciting. Through MAGISTO TECHY, I aim to help
-          people discover tools, understand innovations,
-          and make smarter digital choices.
-        </p>
-      </div>
-    </section>
+                <div class="section-heading reveal">
+                    <span class="eyebrow">THE JOURNEY</span>
 
-  </main>
+                    <h2>
+                        Learning.
+                        <span class="text-gradient">Creating.</span>
+                        Growing.
+                    </h2>
 
-  <div data-component="footer"></div>
+                    <p>
+                        My journey is built around curiosity,
+                        experimentation and consistent creative work.
+                    </p>
+                </div>
+
+                <div class="journey-grid">
+
+                    <article class="journey-card reveal">
+                        <span class="journey-number">01</span>
+                        <h3>Discover</h3>
+                        <p>
+                            Exploring technology, digital platforms
+                            and emerging creative possibilities.
+                        </p>
+                    </article>
+
+                    <article class="journey-card reveal">
+                        <span class="journey-number">02</span>
+                        <h3>Create</h3>
+                        <p>
+                            Turning ideas into informative content,
+                            visual stories and product-focused videos.
+                        </p>
+                    </article>
+
+                    <article class="journey-card reveal">
+                        <span class="journey-number">03</span>
+                        <h3>Connect</h3>
+                        <p>
+                            Building relationships with audiences,
+                            creators and brands through digital content.
+                        </p>
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Skills Component -->
+        <div data-component="skills"></div>
+
+        <!-- Closing CTA -->
+        <section class="section about-cta">
+            <div class="container">
+
+                <div class="cta-card reveal">
+                    <span class="eyebrow">LET'S CONNECT</span>
+
+                    <h2>
+                        Have an idea?
+                        <span class="text-gradient">Let's create something.</span>
+                    </h2>
+
+                    <p>
+                        Interested in working together or discussing
+                        a creative collaboration?
+                    </p>
+
+                    <a href="contact.html" class="btn btn-primary">
+                        Get In Touch
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Component -->
+    <div data-component="footer"></div>
+
+    <!-- Back To Top -->
+    <button
+        class="back-to-top"
+        type="button"
+        data-back-to-top
+        aria-label="Back to top"
+    >
+        ↑
+    </button>
+
+    <!-- JavaScript: Component Loader -->
+    <script src="../js/component-loader.js" defer></script>
+
+    <!-- JavaScript: Navigation -->
+    <script src="../js/navigation.js" defer></script>
+
+    <!-- JavaScript: Animations -->
+    <script src="../js/animations.js" defer></script>
+
+    <!-- JavaScript: Interactions -->
+    <script src="../js/interactions.js" defer></script>
+
+    <!-- JavaScript: Main Initialization -->
+    <script src="../js/main.js" defer></script>
 
 </body>
 </html>
