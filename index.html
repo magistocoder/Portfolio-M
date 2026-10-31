@@ -4,239 +4,1116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101010">
+  <meta name="theme-color" content="#080a0b">
 
-  <title>MAGISTO TECHY | Enter the Future</title>
+  <title>Abhinand A.S. | MAGISTO TECHY</title>
 
-  <meta name="description" content="Abhinand A.S. — Technology Content Creator and UGC Creator. Explore tech reviews, brand collaborations and creative projects.">
+  <meta name="description" content="Abhinand A.S. - Technology Content Creator and UGC Creator. Exploring technology, gadgets and digital creativity.">
 
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================
+       GLOBAL SETTINGS
+    ========================= */
+
+    :root {
+      --bg: #080a0b;
+      --surface: #101415;
+      --surface2: #151a1b;
+      --green: #b8ff38;
+      --white: #f5f7f2;
+      --muted: #929b97;
+      --border: rgba(255,255,255,.10);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1160px, 90%);
+      margin: auto;
+    }
+
+    .section {
+      padding: 110px 0;
+    }
+
+    .section-label {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(34px, 5vw, 55px);
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      max-width: 550px;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    /* =========================
+       NAVIGATION
+    ========================= */
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(8,10,11,.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 21px;
+      letter-spacing: -1px;
+    }
+
+    .logo span {
+      color: var(--green);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      color: #b8bfbb;
+      transition: .3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--green);
+    }
+
+    .nav-contact {
+      border: 1px solid var(--green);
+      color: var(--green) !important;
+      padding: 11px 19px;
+      border-radius: 5px;
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      color: white;
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      border-radius: 5px;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 130px 0 80px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      right: -100px;
+      top: 15%;
+      background: radial-gradient(circle, rgba(184,255,56,.13), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 850px;
+    }
+
+    .availability {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 10px 15px;
+      border-radius: 30px;
+      font-size: 12px;
+      color: #c5cec8;
+      margin-bottom: 35px;
+    }
+
+    .availability-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    .hero-eyebrow {
+      color: var(--green);
+      font-size: 13px;
+      letter-spacing: 4px;
+      font-weight: 800;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(55px, 10vw, 110px);
+      line-height: .98;
+      letter-spacing: -7px;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+
+    .hero h1 span {
+      color: var(--green);
+    }
+
+    .hero-description {
+      color: #a9b2ad;
+      max-width: 590px;
+      line-height: 1.8;
+      font-size: clamp(15px, 2vw, 18px);
+      margin-bottom: 35px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 24px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 800;
+      transition: .3s;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #080a0b;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(184,255,56,.2);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border);
+      color: white;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 25px;
+      margin-top: 40px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .social-links a:hover {
+      color: var(--green);
+    }
+
+    /* =========================
+       STATS
+    ========================= */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .stat {
+      padding: 35px 25px;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat:last-child {
+      border: none;
+    }
+
+    .stat h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 37px;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .stat p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .stat-note {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 15px;
+      line-height: 1.6;
+    }
+
+    /* =========================
+       ABOUT
+    ========================= */
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-visual {
+      min-height: 390px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(184,255,56,.15), transparent 55%),
+        var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .about-visual img {
+      width: 100%;
+      height: 390px;
+      object-fit: contain;
+    }
+
+    .about-placeholder {
+      text-align: center;
+      color: var(--green);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 65px;
+      font-weight: 700;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    .skill-tags {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .skill-tags span {
+      padding: 10px 15px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 4px;
+      font-size: 12px;
+      color: #d5ddd7;
+    }
+
+    /* =========================
+       SERVICES
+    ========================= */
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 45px;
+    }
+
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 32px;
+      transition: .3s;
+    }
+
+    .service-card:hover {
+      border-color: var(--green);
+      transform: translateY(-6px);
+    }
+
+    .service-icon {
+      font-size: 30px;
+      margin-bottom: 25px;
+    }
+
+    .service-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .service-card p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    /* =========================
+       PROJECTS
+    ========================= */
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 45px;
+    }
+
+    .project-card {
+      min-height: 270px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: .3s;
+    }
+
+    .project-card:hover {
+      border-color: var(--green);
+      transform: translateY(-5px);
+    }
+
+    .project-number {
+      color: var(--green);
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    .project-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 27px;
+      margin: 20px 0 10px;
+    }
+
+    .project-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    .project-link {
+      color: var(--green);
+      font-size: 13px;
+      margin-top: 25px;
+    }
+
+    /* =========================
+       CONTACT
+    ========================= */
+
+    .contact-box {
+      padding: 70px 35px;
+      text-align: center;
+      background:
+        radial-gradient(circle at center, rgba(184,255,56,.12), transparent 65%),
+        var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .contact-box h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(35px, 6vw, 60px);
+      letter-spacing: -3px;
+      margin-bottom: 20px;
+    }
+
+    .contact-box p {
+      color: var(--muted);
+      margin-bottom: 30px;
+      line-height: 1.7;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 35px 0;
+      margin-top: 100px;
+    }
+
+    .footer-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    footer p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer-brand {
+      color: var(--green);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+
+    /* =========================
+       ANIMATIONS
+    ========================= */
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =========================
+       MOBILE RESPONSIVE
+    ========================= */
+
+    @media(max-width: 800px) {
+
+      .section {
+        padding: 80px 0;
+      }
+
+      .menu-btn {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 78px;
+        left: 0;
+        width: 100%;
+        background: #101415;
+        border-bottom: 1px solid var(--border);
+        padding: 25px 5%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .hero {
+        min-height: 90vh;
+      }
+
+      .hero h1 {
+        letter-spacing: -4px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat:nth-child(2) {
+        border-right: none;
+      }
+
+      .stat:nth-child(-n+2) {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 35px;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-visual {
+        min-height: 300px;
+      }
+
+      .about-visual img {
+        height: 300px;
+      }
+    }
+
+    @media(max-width: 420px) {
+      .container {
+        width: 90%;
+      }
+
+      .stat {
+        padding: 25px 17px;
+      }
+
+      .stat h3 {
+        font-size: 30px;
+      }
+
+      .hero-buttons .btn {
+        width: 100%;
+      }
+
+      .social-links {
+        gap: 17px;
+      }
+    }
+
+    @media(prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+    }
+
+  </style>
 </head>
 
 <body>
 
-  <header class="header">
-    <nav class="navbar">
-      <a href="#" class="logo">MAGISTO<span>TECHY.</span></a>
+  <!-- NAVIGATION -->
 
-      <button class="menu-toggle" aria-label="Toggle navigation">
-        ☰
-      </button>
+  <header>
+    <div class="container">
+      <nav>
 
-      <div class="nav-links">
-        <a href="#home">Home</a>
-        <a href="#about">About</a>
-        <a href="#projects">Projects</a>
-        <a href="#services">Services</a>
-        <a href="#contact">Contact</a>
-      </div>
-    </nav>
+        <a href="#home" class="logo">
+          MAGISTO<span>TECHY.</span>
+        </a>
+
+        <button class="menu-btn"
+          id="menuBtn"
+          aria-label="Toggle navigation"
+          aria-expanded="false">
+          ☰
+        </button>
+
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#contact" class="nav-contact">Contact</a></li>
+        </ul>
+
+      </nav>
+    </div>
   </header>
+
+
+  <!-- HERO SECTION -->
 
   <main>
 
-    <section id="home" class="hero">
-      <div class="hero-content">
-        <p class="eyebrow">TECHNOLOGY • CREATIVITY • INNOVATION</p>
+    <section class="hero" id="home">
+      <div class="container">
 
-        <h1>
-          ENTER THE<br>
-          <span>FUTURE.</span>
-        </h1>
+        <div class="hero-content">
 
-        <p class="hero-description">
-          I'm Abhinand A.S., a technology content creator
-          and UGC creator passionate about technology,
-          gadgets and digital creativity.
+          <div class="availability">
+            <span class="availability-dot"></span>
+            Open for Brand Collaborations
+          </div>
+
+          <div class="hero-eyebrow">
+            TECHNOLOGY · CREATIVITY · INNOVATION
+          </div>
+
+          <h1>
+            ENTER THE<br>
+            <span>FUTURE.</span>
+          </h1>
+
+          <p class="hero-description">
+            I'm Abhinand A.S., a technology content creator
+            and UGC creator passionate about technology,
+            gadgets and digital creativity.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="#projects" class="btn btn-primary">
+              Explore My Work ↗
+            </a>
+
+            <a href="#contact" class="btn btn-outline">
+              Work With Me
+            </a>
+          </div>
+
+          <div class="social-links">
+            <a href="https://instagram.com/magisto_techy"
+              target="_blank" rel="noopener noreferrer">
+              Instagram ↗
+            </a>
+
+            <a href="https://youtube.com/@MagistoTechy"
+              target="_blank" rel="noopener noreferrer">
+              YouTube ↗
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- STATISTICS -->
+
+    <section class="container reveal">
+
+      <div class="stats">
+
+        <div class="stat">
+          <h3>25K+</h3>
+          <p>Instagram Followers</p>
+        </div>
+
+        <div class="stat">
+          <h3>1.64K+</h3>
+          <p>YouTube Subscribers</p>
+        </div>
+
+        <div class="stat">
+          <h3>5+</h3>
+          <p>Brand Collaborations</p>
+        </div>
+
+        <div class="stat">
+          <h3>246K+</h3>
+          <p>Monthly Views*</p>
+        </div>
+
+      </div>
+
+      <p class="stat-note">
+        *Historical Instagram analytics snapshot:
+        October 1–30, 2026. Metrics fluctuate.
+      </p>
+
+    </section>
+
+
+    <!-- ABOUT -->
+
+    <section class="section" id="about">
+      <div class="container">
+
+        <div class="about-grid reveal">
+
+          <div class="about-visual">
+
+            <img
+              src="assets/portrait.png"
+              alt="Portrait of Abhinand A.S."
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+
+            <div class="about-placeholder" style="display:none;">
+              A.S.
+            </div>
+
+          </div>
+
+          <div class="about-text">
+
+            <div class="section-label">
+              GET TO KNOW ME
+            </div>
+
+            <h2 class="section-title">
+              Behind The<br>
+              Digital World.
+            </h2>
+
+            <p>
+              I'm Abhinand A.S., the creator behind
+              MAGISTO TECHY. I create technology-focused
+              content that makes the digital world easier
+              to explore and understand.
+            </p>
+
+            <p>
+              From discovering innovative gadgets to
+              experimenting with AI tools and digital
+              creativity, I focus on making technology
+              interesting, accessible and useful.
+            </p>
+
+            <div class="skill-tags">
+              <span>Technology</span>
+              <span>UGC Creation</span>
+              <span>Gadgets</span>
+              <span>AI Tools</span>
+              <span>Content Creation</span>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- SERVICES -->
+
+    <section class="section" id="services">
+      <div class="container">
+
+        <div class="section-label">WHAT I DO</div>
+
+        <h2 class="section-title">
+          My Expertise.
+        </h2>
+
+        <p class="section-description">
+          Creative digital solutions and technology
+          content designed to connect brands with audiences.
         </p>
 
-        <div class="hero-buttons">
-          <a href="#projects" class="btn primary">Explore My Work</a>
-          <a href="#contact" class="btn secondary">Work With Me</a>
+        <div class="services-grid">
+
+          <div class="service-card reveal">
+            <div class="service-icon">📱</div>
+            <h3>Tech Content</h3>
+            <p>
+              Technology explainers, gadget discoveries,
+              app reviews and informative short-form content.
+            </p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-icon">🎬</div>
+            <h3>UGC Creation</h3>
+            <p>
+              Creative user-generated content for brands,
+              products and digital campaigns.
+            </p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-icon">✨</div>
+            <h3>Creative Production</h3>
+            <p>
+              Visual storytelling, video editing and
+              engaging digital content production.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- PROJECTS -->
+
+    <section class="section" id="projects">
+      <div class="container">
+
+        <div class="section-label">SELECTED WORK</div>
+
+        <h2 class="section-title">
+          Projects & Creations.
+        </h2>
+
+        <p class="section-description">
+          A look at my digital presence and creative work.
+        </p>
+
+        <div class="projects-grid">
+
+          <div class="project-card reveal">
+
+            <div class="project-number">01 / CONTENT</div>
+
+            <div>
+              <h3>MAGISTO TECHY</h3>
+              <p>
+                Technology content, gadget discoveries,
+                AI tools and digital innovation.
+              </p>
+            </div>
+
+            <a class="project-link"
+              href="https://instagram.com/magisto_techy"
+              target="_blank" rel="noopener noreferrer">
+              Explore Instagram ↗
+            </a>
+
+          </div>
+
+
+          <div class="project-card reveal">
+
+            <div class="project-number">02 / VIDEO</div>
+
+            <div>
+              <h3>YouTube Channel</h3>
+              <p>
+                Technology videos, digital tutorials
+                and informative content.
+              </p>
+            </div>
+
+            <a class="project-link"
+              href="https://youtube.com/@MagistoTechy"
+              target="_blank" rel="noopener noreferrer">
+              Explore YouTube ↗
+            </a>
+
+          </div>
+
+
+          <div class="project-card reveal">
+
+            <div class="project-number">03 / CREATIVE</div>
+
+            <div>
+              <h3>Digital Creativity</h3>
+              <p>
+                Exploring creative software, AI-powered
+                workflows and visual storytelling.
+              </p>
+            </div>
+
+            <span class="project-link">
+              Creative Experiments
+            </span>
+
+          </div>
+
+
+          <div class="project-card reveal">
+
+            <div class="project-number">04 / PHOTOGRAPHY</div>
+
+            <div>
+              <h3>LUMIVANE</h3>
+              <p>
+                Product photography, visual aesthetics
+                and creative mobile photography.
+              </p>
+            </div>
+
+            <span class="project-link">
+              Photography & Visuals
+            </span>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- CONTACT -->
+
+    <section class="section" id="contact">
+      <div class="container">
+
+        <div class="contact-box reveal">
+
+          <div class="section-label">
+            LET'S CONNECT
+          </div>
+
+          <h2>
+            HAVE A PROJECT<br>
+            IN MIND?
+          </h2>
+
+          <p>
+            Looking to collaborate or create something
+            interesting together? Let's talk.
+          </p>
+
+          <a href="mailto:magistotechy@gmail.com"
+            class="btn btn-primary">
+            Get In Touch ↗
+          </a>
+
         </div>
 
-        <div class="social-links">
-          <a href="https://www.instagram.com/magisto_techy/"
-             target="_blank" rel="noopener">Instagram ↗</a>
-
-          <a href="https://youtube.com/@magisto_techy"
-             target="_blank" rel="noopener">YouTube ↗</a>
-        </div>
       </div>
-
-      <div class="hero-image">
-        <img
-          src="assets/portrait.png"
-          alt="Abhinand A.S. — MAGISTO TECHY"
-          onerror="this.style.display='none'"
-        >
-      </div>
-    </section>
-
-    <section class="stats">
-      <div>
-        <h2>25K+</h2>
-        <p>Instagram Followers</p>
-      </div>
-
-      <div>
-        <h2>1.64K+</h2>
-        <p>YouTube Subscribers</p>
-      </div>
-
-      <div>
-        <h2>5+</h2>
-        <p>Brand Collaborations</p>
-      </div>
-
-      <div>
-        <h2>246K+</h2>
-        <p>Monthly Views*</p>
-      </div>
-
-      <p class="stats-note">
-        *Historical Instagram analytics snapshot: October 1–30, 2026.
-        Metrics fluctuate.
-      </p>
-    </section>
-
-    <section id="about" class="section about">
-      <p class="eyebrow">GET TO KNOW ME</p>
-      <h2>Creating at the intersection of <span>Tech & Creativity.</span></h2>
-
-      <p>
-        I'm Abhinand, the creator behind MAGISTO TECHY.
-        I create technology-focused content that makes
-        gadgets, smartphones and digital tools easier
-        to understand and explore.
-      </p>
-
-      <p>
-        My work combines product storytelling, creative
-        presentation and AI-assisted content creation.
-      </p>
-    </section>
-
-    <section id="projects" class="section projects">
-      <p class="eyebrow">SELECTED WORK</p>
-      <h2>Featured <span>Projects.</span></h2>
-
-      <div class="project-grid">
-
-        <article class="project-card">
-          <div class="project-visual">01</div>
-          <p>PRODUCT REVIEW</p>
-          <h3>Phonokart — ARC Power Bank</h3>
-          <a href="https://www.instagram.com/reel/DdwCf3cR_Gk/"
-             target="_blank" rel="noopener">View Project ↗</a>
-        </article>
-
-        <article class="project-card">
-          <div class="project-visual">02</div>
-          <p>AI-ASSISTED BRAND PROMOTION</p>
-          <h3>Motorola — AI Avatar Campaign</h3>
-          <a href="https://www.instagram.com/reel/DcD4CjpJl_J/"
-             target="_blank" rel="noopener">View Project ↗</a>
-        </article>
-
-        <article class="project-card">
-          <div class="project-visual">03</div>
-          <p>BRAND COLLABORATION</p>
-          <h3>GoBoult — Product Promotion</h3>
-          <a href="https://www.instagram.com/reel/DT7vvb6Ceso/"
-             target="_blank" rel="noopener">View Project ↗</a>
-        </article>
-
-        <article class="project-card">
-          <div class="project-visual">04</div>
-          <p>BRAND COLLABORATION</p>
-          <h3>Portronics — Product Promotion</h3>
-          <a href="https://www.instagram.com/reel/DOgPWobiS2I/"
-             target="_blank" rel="noopener">View Project ↗</a>
-        </article>
-
-        <article class="project-card">
-          <div class="project-visual">05</div>
-          <p>BRAND COLLABORATION</p>
-          <h3>Truke India — Product Promotion</h3>
-          <a href="https://www.instagram.com/reel/DOyNtC1iTgK/"
-             target="_blank" rel="noopener">View Project ↗</a>
-        </article>
-
-      </div>
-    </section>
-
-    <section id="services" class="section services">
-      <p class="eyebrow">WHAT I OFFER</p>
-      <h2>Let's create something <span>impactful.</span></h2>
-
-      <div class="service-grid">
-        <article class="service-card">
-          <h3>Tech Product Reviews</h3>
-          <p>Engaging content showcasing product features and real-world value.</p>
-        </article>
-
-        <article class="service-card">
-          <h3>Sponsored Reels</h3>
-          <p>Creative Instagram promotions designed for brand storytelling.</p>
-        </article>
-
-        <article class="service-card">
-          <h3>UGC Content</h3>
-          <p>Creator-led videos for brands and digital campaigns.</p>
-        </article>
-
-        <article class="service-card">
-          <h3>AI-Assisted Photography</h3>
-          <p>Creative product visuals using AI-assisted workflows.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section brands">
-      <p class="eyebrow">BRANDS I'VE WORKED WITH</p>
-      <h2>Built on <span>Collaboration.</span></h2>
-
-      <div class="brand-list">
-        <span>Motorola</span>
-        <span>Samsung</span>
-        <span>GoBoult</span>
-        <span>Truke</span>
-        <span>Portronics</span>
-        <span>Phonokart</span>
-      </div>
-    </section>
-
-    <section id="contact" class="section contact">
-      <p class="eyebrow">HAVE A PROJECT IN MIND?</p>
-      <h2>Let's work <span>together.</span></h2>
-
-      <p>
-        Interested in collaborating? Reach out through email
-        or connect with me on Instagram.
-      </p>
-
-      <a class="btn primary"
-         href="mailto:followtechofficials00mailbox@gmail.com">
-        Send Me an Email ↗
-      </a>
-
-      <a class="contact-social"
-         href="https://www.instagram.com/magisto_techy/"
-         target="_blank" rel="noopener">
-        Instagram ↗
-      </a>
     </section>
 
   </main>
 
-  <footer class="footer">
-    <a href="#" class="logo">MAGISTO<span>TECHY.</span></a>
-    <p>ENTER THE FUTURE.</p>
-    <p>© 2026 MAGISTO TECHY. All rights reserved.</p>
+
+  <!-- FOOTER -->
+
+  <footer>
+    <div class="container">
+
+      <div class="footer-content">
+
+        <a href="#home" class="footer-brand">
+          MAGISTO TECHY.
+        </a>
+
+        <p>
+          © <span id="year"></span>
+          Abhinand A.S. All rights reserved.
+        </p>
+
+        <p>
+          Built with creativity & technology.
+        </p>
+
+      </div>
+
+    </div>
   </footer>
 
-  <script src="js/script.js"></script>
+
+  <!-- JAVASCRIPT -->
+
+  <script>
+
+    // Mobile Navigation
+
+    const menuBtn = document.getElementById("menuBtn");
+    const navLinks = document.getElementById("navLinks");
+
+    menuBtn.addEventListener("click", () => {
+
+      const isOpen = navLinks.classList.toggle("active");
+
+      menuBtn.setAttribute("aria-expanded", isOpen);
+      menuBtn.textContent = isOpen ? "✕" : "☰";
+
+    });
+
+    // Close menu after clicking a link
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+
+      link.addEventListener("click", () => {
+
+        navLinks.classList.remove("active");
+        menuBtn.setAttribute("aria-expanded", "false");
+        menuBtn.textContent = "☰";
+
+      });
+
+    });
+
+    // Reveal animations
+
+    const observer = new IntersectionObserver((entries) => {
+
+      entries.forEach(entry => {
+
+        if (entry.isIntersecting) {
+
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+
+        }
+
+      });
+
+    }, {
+      threshold: 0.12
+    });
+
+    document.querySelectorAll(".reveal").forEach(element => {
+      observer.observe(element);
+    });
+
+    // Automatic copyright year
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+  </script>
 
 </body>
 </html>
