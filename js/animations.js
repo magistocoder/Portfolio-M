@@ -3,17 +3,23 @@
    FILE: js/animations.js
    PROJECT: PORTFOLIO-M V2.0
    PURPOSE: Scroll reveal and entrance animations
+   BRAND: MAGISTO TECHY
    ========================================================= */
 
 (() => {
   "use strict";
 
+  // -------------------------------------------------------
+  // CONFIGURATION
+  // -------------------------------------------------------
+
   const CONFIG = {
     revealSelector: ".reveal, .reveal-left, .reveal-right",
     staggerSelector: "[data-stagger]",
     visibleClass: "is-visible",
-    initializedAttribute: "data-animations-ready",
+
     staggerDelay: 100,
+
     observerThreshold: 0.12,
     observerRootMargin: "0px 0px -50px 0px"
   };
@@ -21,84 +27,72 @@
   let observer = null;
   let initialized = false;
 
-  /**
-   * Wait for reusable components without missing
-   * the event if they have already loaded.
-   */
-  function onComponentsReady(callback) {
-    if (
-      document.body.dataset.componentsLoaded === "true" ||
-      document.querySelector(".navbar, .footer, [data-component]")
-    ) {
-      callback();
-      return;
-    }
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
 
-    document.addEventListener(
-      "portfolio:components-loaded",
-      callback,
-      { once: true }
-    );
-  }
+  // -------------------------------------------------------
+  // IMMEDIATE REVEAL
+  // -------------------------------------------------------
 
-  /**
-   * Immediately reveal elements when animations
-   * are unavailable or reduced motion is preferred.
-   */
   function revealImmediately(elements) {
     elements.forEach((element) => {
       element.classList.add(CONFIG.visibleClass);
+      element.style.transitionDelay = "0ms";
     });
   }
 
-  /**
-   * Apply staggered transition delays to children.
-   */
-  function initializeStaggerGroups() {
-    const groups = document.querySelectorAll(
-      CONFIG.staggerSelector
+  // -------------------------------------------------------
+  // STAGGER ANIMATIONS
+  // -------------------------------------------------------
+
+  function initializeStaggerGroups(root = document) {
+    const groups = [];
+
+    if (
+      root instanceof Element &&
+      root.matches(CONFIG.staggerSelector)
+    ) {
+      groups.push(root);
+    }
+
+    groups.push(
+      ...root.querySelectorAll(CONFIG.staggerSelector)
     );
 
     groups.forEach((group) => {
-      const children = Array.from(group.children);
+      Array.from(group.children).forEach(
+        (child, index) => {
+          if (reducedMotion.matches) {
+            child.style.transitionDelay = "0ms";
+            return;
+          }
 
-      children.forEach((child, index) => {
-        child.style.transitionDelay =
-          `${index * CONFIG.staggerDelay}ms`;
-      });
+          child.style.transitionDelay =
+            `${index * CONFIG.staggerDelay}ms`;
+        }
+      );
     });
   }
 
-  /**
-   * Initialize scroll reveal observation.
-   */
-  function initializeRevealElements() {
-    const elements = Array.from(
-      document.querySelectorAll(CONFIG.revealSelector)
-    );
+  // -------------------------------------------------------
+  // OBSERVER SETUP
+  // -------------------------------------------------------
 
-    if (!elements.length) return;
-
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (
-      reducedMotion ||
-      !("IntersectionObserver" in window)
-    ) {
-      revealImmediately(elements);
-      return;
+  function createObserver() {
+    if (!("IntersectionObserver" in window)) {
+      return null;
     }
 
-    observer = new IntersectionObserver(
+    return new IntersectionObserver(
       (entries, currentObserver) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
 
-          entry.target.classList.add(CONFIG.visibleClass);
+          entry.target.classList.add(
+            CONFIG.visibleClass
+          );
 
-          // Stop observing after the reveal animation.
           currentObserver.unobserve(entry.target);
         });
       },
@@ -107,6 +101,32 @@
         rootMargin: CONFIG.observerRootMargin
       }
     );
+  }
+
+  // -------------------------------------------------------
+  // INITIALIZE REVEAL ELEMENTS
+  // -------------------------------------------------------
+
+  function initializeRevealElements(root = document) {
+    const elements = [];
+
+    if (
+      root instanceof Element &&
+      root.matches(CONFIG.revealSelector)
+    ) {
+      elements.push(root);
+    }
+
+    elements.push(
+      ...root.querySelectorAll(CONFIG.revealSelector)
+    );
+
+    if (!elements.length) return;
+
+    if (reducedMotion.matches || !observer) {
+      revealImmediately(elements);
+      return;
+    }
 
     elements.forEach((element) => {
       if (element.classList.contains(CONFIG.visibleClass)) {
@@ -117,55 +137,113 @@
     });
   }
 
-  /**
-   * Initialize all animation features once.
-   */
+  // -------------------------------------------------------
+  // INITIALIZE ANIMATIONS
+  // -------------------------------------------------------
+
   function initializeAnimations() {
     if (initialized) return;
 
-    if (
-      document.body.dataset.animationsReady === "true"
-    ) {
-      initialized = true;
-      return;
-    }
-
     initialized = true;
-    document.body.dataset.animationsReady = "true";
+
+    observer = createObserver();
 
     initializeStaggerGroups();
     initializeRevealElements();
+
+    document.body.dataset.animationsReady = "true";
+
+    console.info(
+      "[Animations] Successfully initialized."
+    );
   }
 
-  /**
-   * Re-observe newly inserted reveal elements.
-   * Useful if another script adds content later.
-   */
-  function refreshAnimations() {
-    if (!initialized) return;
+  // -------------------------------------------------------
+  // REFRESH DYNAMIC CONTENT
+  // -------------------------------------------------------
+
+  function refreshAnimations(root = document) {
+    if (!initialized) {
+      initializeAnimations();
+      return;
+    }
+
+    initializeStaggerGroups(root);
+    initializeRevealElements(root);
+  }
+
+  // -------------------------------------------------------
+  // REDUCED MOTION CHANGES
+  // -------------------------------------------------------
+
+  function handleMotionChange(event) {
+    if (!event.matches) return;
 
     const elements = document.querySelectorAll(
       CONFIG.revealSelector
     );
 
-    if (!observer) {
-      revealImmediately(Array.from(elements));
+    if (observer) {
+      observer.disconnect();
+    }
+
+    revealImmediately(Array.from(elements));
+  }
+
+  if (typeof reducedMotion.addEventListener === "function") {
+    reducedMotion.addEventListener(
+      "change",
+      handleMotionChange
+    );
+  } else {
+    reducedMotion.addListener(handleMotionChange);
+  }
+
+  // -------------------------------------------------------
+  // CLEANUP
+  // -------------------------------------------------------
+
+  function destroyAnimations() {
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+
+    initialized = false;
+
+    delete document.body.dataset.animationsReady;
+
+    console.info("[Animations] Observer cleaned up.");
+  }
+
+  // -------------------------------------------------------
+  // PUBLIC API
+  // -------------------------------------------------------
+
+  window.PortfolioAnimations = {
+    refresh: refreshAnimations,
+    destroy: destroyAnimations
+  };
+
+  // -------------------------------------------------------
+  // START AFTER COMPONENT LOADING
+  // -------------------------------------------------------
+
+  function startAnimations() {
+    if (
+      document.body.dataset.componentsLoaded === "true"
+    ) {
+      initializeAnimations();
       return;
     }
 
-    elements.forEach((element) => {
-      if (
-        !element.classList.contains(CONFIG.visibleClass)
-      ) {
-        observer.observe(element);
-      }
-    });
+    document.addEventListener(
+      "portfolio:components-loaded",
+      initializeAnimations,
+      { once: true }
+    );
   }
 
-  // Public refresh method for future dynamic sections.
-  window.PortfolioAnimations = {
-    refresh: refreshAnimations
-  };
+  startAnimations();
 
-  onComponentsReady(initializeAnimations);
 })();
