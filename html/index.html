@@ -1,49 +1,47 @@
 
+<!--
+  FILE: index.html
+  PROJECT: PORTFOLIO-M V2.0
+  BRAND: MAGISTO TECHY
+  LOCATION: Portfolio-M/index.html
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="theme-color" content="#080A0B">
     <meta name="author" content="Abhinand A.S.">
+    <meta name="description" content="Explore the portfolio of Abhinand A.S. — Tech Content Creator, UGC Creator and Digital Creative from Kerala, India.">
+    <meta name="theme-color" content="#080A0B">
 
-    <meta name="description"
-        content="Abhinand A.S. — Technology Content Creator and UGC Creator. Explore technology, gadgets, creative projects and collaborations.">
-
-    <meta property="og:title"
-        content="Abhinand A.S. | MAGISTO TECHY">
-    <meta property="og:description"
-        content="Technology. Creativity. Innovation.">
+    <meta property="og:title" content="MAGISTO TECHY | Personal Portfolio">
+    <meta property="og:description" content="Technology, creativity and digital experiences by Abhinand A.S.">
     <meta property="og:type" content="website">
 
     <title>MAGISTO TECHY | Abhinand A.S.</title>
 
-    <!-- Typography -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
-
-    <!-- Main Application -->
-    <script type="module" src="js/main.js"></script>
 </head>
 
-<body>
+<body data-root="./">
 
     <!-- Accessibility: Skip Navigation -->
-    <a class="skip-link" href="#main-content">
+    <a href="#main-content" class="skip-link">
         Skip to content
     </a>
 
     <!-- Navigation Component -->
     <div data-component="navbar"></div>
 
-    <!-- Main Homepage -->
     <main id="main-content">
 
         <!-- Hero Component -->
@@ -53,26 +51,41 @@
         <div data-component="statistics"></div>
 
         <!-- About Preview -->
-        <section class="section section-about" id="about-preview">
+        <section class="section about-preview" id="about">
             <div class="container">
-                <div class="section-heading">
-                    <span class="eyebrow">GET TO KNOW ME</span>
-
+                <div class="section-heading reveal">
+                    <span class="eyebrow">ABOUT ME</span>
                     <h2>
-                        Behind the
-                        <span class="text-accent">Digital World.</span>
+                        Technology meets
+                        <span class="text-gradient">creativity.</span>
                     </h2>
-
                     <p>
-                        Technology enthusiast, content creator
-                        and digital storyteller.
+                        I'm Abhinand — a tech content creator and UGC creator
+                        passionate about technology, digital storytelling
+                        and creative experiences.
                     </p>
                 </div>
 
-                <a class="text-link" href="pages/about.html">
-                    Discover My Story
-                    <span aria-hidden="true">↗</span>
-                </a>
+                <div class="about-preview-content reveal">
+                    <div class="about-preview-text">
+                        <p>
+                            Through MAGISTO TECHY, I create technology-focused
+                            content that makes digital products, tools and
+                            innovations easier to understand.
+                        </p>
+
+                        <p>
+                            My work combines technology, visual storytelling
+                            and creative execution to connect brands with
+                            digital audiences.
+                        </p>
+
+                        <a href="pages/about.html" class="btn btn-outline">
+                            Explore My Story
+                            <span aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -83,26 +96,57 @@
         <div data-component="project-cards"></div>
 
         <!-- Services Preview -->
-        <section class="section" id="services-preview">
+        <section class="section services-preview" id="services">
             <div class="container">
-                <div class="section-heading">
+                <div class="section-heading reveal">
                     <span class="eyebrow">WHAT I DO</span>
-
                     <h2>
-                        Creativity meets
-                        <span class="text-accent">Technology.</span>
+                        Creative work.
+                        <span class="text-gradient">Real impact.</span>
                     </h2>
-
                     <p>
-                        Discover my content creation and
-                        brand collaboration services.
+                        From technology content to brand-focused creative
+                        production, I work across digital platforms.
                     </p>
                 </div>
 
-                <a class="text-link" href="pages/services.html">
-                    Explore Services
-                    <span aria-hidden="true">↗</span>
-                </a>
+                <div class="services-preview-grid">
+
+                    <article class="service-card reveal">
+                        <span class="service-number">01</span>
+                        <h3>Tech Content Creation</h3>
+                        <p>
+                            Technology explainers, gadget content,
+                            app discoveries and digital storytelling.
+                        </p>
+                    </article>
+
+                    <article class="service-card reveal">
+                        <span class="service-number">02</span>
+                        <h3>UGC Creation</h3>
+                        <p>
+                            Product-focused content designed to present
+                            brands and products in an engaging way.
+                        </p>
+                    </article>
+
+                    <article class="service-card reveal">
+                        <span class="service-number">03</span>
+                        <h3>Video Editing</h3>
+                        <p>
+                            Short-form video editing and creative
+                            visual production for digital platforms.
+                        </p>
+                    </article>
+
+                </div>
+
+                <div class="section-action reveal">
+                    <a href="pages/services.html" class="btn btn-outline">
+                        Explore Services
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -113,6 +157,31 @@
 
     <!-- Footer Component -->
     <div data-component="footer"></div>
+
+    <!-- Back To Top -->
+    <button
+        class="back-to-top"
+        type="button"
+        data-back-to-top
+        aria-label="Back to top"
+    >
+        ↑
+    </button>
+
+    <!-- JavaScript: Load Components First -->
+    <script src="js/component-loader.js" defer></script>
+
+    <!-- JavaScript: Navigation -->
+    <script src="js/navigation.js" defer></script>
+
+    <!-- JavaScript: Animations -->
+    <script src="js/animations.js" defer></script>
+
+    <!-- JavaScript: Interactions -->
+    <script src="js/interactions.js" defer></script>
+
+    <!-- JavaScript: Main Initialization -->
+    <script src="js/main.js" defer></script>
 
 </body>
 </html>
