@@ -1,291 +1,152 @@
 
-/* FILE: css/animations.css */
+/* =========================================================
+   FILE: js/animations.js
+   PROJECT: PORTFOLIO-M V2.0
+   PURPOSE: Scroll reveal and entrance animations
+   ========================================================= */
 
-/* =========================================
-   KEYFRAMES
-========================================= */
+(() => {
+  "use strict";
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
+  const CONFIG = {
+    revealSelector: ".reveal, .reveal-left, .reveal-right",
+    staggerSelector: "[data-stagger]",
+    visibleClass: "is-visible",
+    staggerDelay: 100,
+    threshold: 0.12,
+    rootMargin: "0px 0px -50px 0px"
+  };
+
+  let initialized = false;
+  let observer = null;
+
+  /**
+   * Wait for actual component completion.
+   * A placeholder alone does not mean loading is complete.
+   */
+  function onComponentsReady(callback) {
+    if (document.body.dataset.componentsLoaded === "true") {
+      callback();
+      return;
     }
-    to {
-        opacity: 1;
-    }
-}
 
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(28px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeLeft {
-    from {
-        opacity: 0;
-        transform: translateX(28px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes fadeRight {
-    from {
-        opacity: 0;
-        transform: translateX(-28px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-12px);
-    }
-}
-
-@keyframes pulseGlow {
-    0%, 100% {
-        box-shadow: 0 0 12px rgba(184, 255, 56, 0.12);
-    }
-    50% {
-        box-shadow: 0 0 28px rgba(184, 255, 56, 0.3);
-    }
-}
-
-@keyframes rotateSlow {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
-}
-
-/* =========================================
-   PAGE ENTRANCE
-========================================= */
-
-body {
-    animation: fadeIn 0.6s ease both;
-}
-
-.page-wrapper {
-    animation: fadeIn 0.7s ease both;
-}
-
-/* =========================================
-   REUSABLE ANIMATION CLASSES
-========================================= */
-
-.animate-fade-in {
-    animation: fadeIn 0.8s ease both;
-}
-
-.animate-fade-up {
-    animation: fadeUp 0.8s ease both;
-}
-
-.animate-fade-down {
-    animation: fadeDown 0.8s ease both;
-}
-
-.animate-fade-left {
-    animation: fadeLeft 0.8s ease both;
-}
-
-.animate-fade-right {
-    animation: fadeRight 0.8s ease both;
-}
-
-.animate-float {
-    animation: float 4s ease-in-out infinite;
-}
-
-.animate-glow {
-    animation: pulseGlow 3s ease-in-out infinite;
-}
-
-.animate-rotate {
-    animation: rotateSlow 18s linear infinite;
-}
-
-/* =========================================
-   ANIMATION DELAYS
-========================================= */
-
-.delay-100 {
-    animation-delay: 100ms;
-}
-
-.delay-200 {
-    animation-delay: 200ms;
-}
-
-.delay-300 {
-    animation-delay: 300ms;
-}
-
-.delay-400 {
-    animation-delay: 400ms;
-}
-
-.delay-500 {
-    animation-delay: 500ms;
-}
-
-/* =========================================
-   SCROLL REVEAL STATES
-========================================= */
-
-.reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition:
-        opacity 700ms ease,
-        transform 700ms ease;
-}
-
-.reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.reveal-left {
-    opacity: 0;
-    transform: translateX(-30px);
-    transition:
-        opacity 700ms ease,
-        transform 700ms ease;
-}
-
-.reveal-left.is-visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.reveal-right {
-    opacity: 0;
-    transform: translateX(30px);
-    transition:
-        opacity 700ms ease,
-        transform 700ms ease;
-}
-
-.reveal-right.is-visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-/* =========================================
-   HOVER INTERACTIONS
-========================================= */
-
-.hover-lift {
-    transition: transform var(--transition-normal);
-}
-
-.hover-lift:hover {
-    transform: translateY(-5px);
-}
-
-.hover-glow {
-    transition: box-shadow var(--transition-normal);
-}
-
-.hover-glow:hover {
-    box-shadow: var(--shadow-glow);
-}
-
-.hover-scale {
-    transition: transform var(--transition-normal);
-}
-
-.hover-scale:hover {
-    transform: scale(1.03);
-}
-
-/* =========================================
-   IMAGE HOVER
-========================================= */
-
-.image-zoom {
-    overflow: hidden;
-}
-
-.image-zoom img {
-    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.image-zoom:hover img {
-    transform: scale(1.06);
-}
-
-/* =========================================
-   LOADING / SKELETON EFFECT
-========================================= */
-
-.skeleton {
-    background: linear-gradient(
-        90deg,
-        var(--color-surface) 25%,
-        var(--color-surface-light) 50%,
-        var(--color-surface) 75%
+    document.addEventListener(
+      "portfolio:components-loaded",
+      callback,
+      { once: true }
     );
-    background-size: 200% 100%;
-    animation: shimmer 1.6s infinite linear;
-}
+  }
 
-/* =========================================
-   REDUCED MOTION ACCESSIBILITY
-========================================= */
+  /**
+   * Reveal elements immediately when animation
+   * support is unavailable or reduced motion is enabled.
+   */
+  function revealImmediately(elements) {
+    elements.forEach((element) => {
+      element.classList.add(CONFIG.visibleClass);
+    });
+  }
 
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+  /**
+   * Apply staggered delays to child elements.
+   */
+  function initializeStaggerGroups() {
+    document.querySelectorAll(CONFIG.staggerSelector).forEach(
+      (group) => {
+        Array.from(group.children).forEach((child, index) => {
+          child.style.transitionDelay =
+            `${index * CONFIG.staggerDelay}ms`;
+        });
+      }
+    );
+  }
+
+  /**
+   * Initialize scroll reveal animations.
+   */
+  function initializeRevealElements() {
+    const elements = Array.from(
+      document.querySelectorAll(CONFIG.revealSelector)
+    );
+
+    if (!elements.length) return;
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (
+      reducedMotion ||
+      !("IntersectionObserver" in window)
+    ) {
+      revealImmediately(elements);
+      return;
     }
 
-    .reveal,
-    .reveal-left,
-    .reveal-right {
-        opacity: 1;
-        transform: none;
+    observer = new IntersectionObserver(
+      (entries, currentObserver) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          entry.target.classList.add(CONFIG.visibleClass);
+          currentObserver.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: CONFIG.threshold,
+        rootMargin: CONFIG.rootMargin
+      }
+    );
+
+    elements.forEach((element) => {
+      if (!element.classList.contains(CONFIG.visibleClass)) {
+        observer.observe(element);
+      }
+    });
+  }
+
+  /**
+   * Initialize the animation system once.
+   */
+  function initializeAnimations() {
+    if (initialized) return;
+
+    initialized = true;
+
+    document.body.dataset.animationsReady = "true";
+
+    initializeStaggerGroups();
+    initializeRevealElements();
+  }
+
+  /**
+   * Refresh reveal animations for content added later.
+   */
+  function refreshAnimations() {
+    if (!initialized) return;
+
+    initializeStaggerGroups();
+
+    const elements = Array.from(
+      document.querySelectorAll(CONFIG.revealSelector)
+    );
+
+    if (!observer) {
+      revealImmediately(elements);
+      return;
     }
-}
+
+    elements.forEach((element) => {
+      if (!element.classList.contains(CONFIG.visibleClass)) {
+        observer.observe(element);
+      }
+    });
+  }
+
+  window.PortfolioAnimations = {
+    refresh: refreshAnimations
+  };
+
+  onComponentsReady(initializeAnimations);
+
+})();
