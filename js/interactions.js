@@ -1,168 +1,195 @@
 
-/* FILE: js/interactions.js */
-
-/* =========================================
-   PORTFOLIO-M V2.0
-   UI INTERACTIONS CONTROLLER
-   Brand: MAGISTO TECHY
-========================================= */
+/* =========================================================
+   FILE: js/interactions.js
+   PROJECT: PORTFOLIO-M V2.0
+   PURPOSE: General UI interactions and user experience
+   ========================================================= */
 
 (() => {
-    "use strict";
+  "use strict";
 
-    function initInteractions() {
-        if (document.documentElement.dataset.interactionsReady === "true") {
-            return;
-        }
+  let initialized = false;
 
-        document.documentElement.dataset.interactionsReady = "true";
-
-        // =====================================
-        // 1. DYNAMIC COPYRIGHT YEAR
-        // =====================================
-
-        document.querySelectorAll("[data-current-year]").forEach((element) => {
-            element.textContent = new Date().getFullYear();
-        });
-
-        // =====================================
-        // 2. BACK TO TOP
-        // =====================================
-
-        const backToTop = document.querySelector("[data-back-to-top]");
-
-        if (backToTop) {
-            const updateBackToTop = () => {
-                backToTop.classList.toggle(
-                    "is-visible",
-                    window.scrollY > 400
-                );
-            };
-
-            window.addEventListener("scroll", updateBackToTop, {
-                passive: true
-            });
-
-            updateBackToTop();
-
-            backToTop.addEventListener("click", () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-            });
-        }
-
-        // =====================================
-        // 3. SMOOTH INTERNAL NAVIGATION
-        // =====================================
-
-        document.querySelectorAll('a[href^="#"]').forEach((link) => {
-            link.addEventListener("click", (event) => {
-                const targetID = link.getAttribute("href");
-
-                if (!targetID || targetID === "#") return;
-
-                const target = document.querySelector(targetID);
-
-                if (!target) return;
-
-                event.preventDefault();
-
-                target.scrollIntoView({
-                    behavior: window.matchMedia(
-                        "(prefers-reduced-motion: reduce)"
-                    ).matches ? "auto" : "smooth",
-                    block: "start"
-                });
-
-                // Keep keyboard navigation accessible.
-                if (!target.hasAttribute("tabindex")) {
-                    target.setAttribute("tabindex", "-1");
-                }
-
-                target.focus({ preventScroll: true });
-            });
-        });
-
-        // =====================================
-        // 4. CONTACT FORM FEEDBACK
-        // =====================================
-
-        const contactForms = document.querySelectorAll(
-            ".contact-form"
-        );
-
-        contactForms.forEach((form) => {
-            form.addEventListener("submit", (event) => {
-                // Let native HTML validation run first.
-                if (!form.checkValidity()) {
-                    return;
-                }
-
-                // Do not interrupt normal FormSubmit submission.
-                if (form.dataset.ajax === "true") {
-                    event.preventDefault();
-
-                    const status = form.querySelector(
-                        "[data-form-status]"
-                    );
-
-                    if (status) {
-                        status.textContent =
-                            "Your form is being processed...";
-                        status.setAttribute("role", "status");
-                    }
-                }
-            });
-        });
-
-        // =====================================
-        // 5. EXTERNAL LINKS
-        // =====================================
-
-        document.querySelectorAll('a[target="_blank"]').forEach((link) => {
-            const relValues = new Set(
-                (link.getAttribute("rel") || "")
-                    .split(/\s+/)
-                    .filter(Boolean)
-            );
-
-            relValues.add("noopener");
-            relValues.add("noreferrer");
-
-            link.setAttribute("rel", [...relValues].join(" "));
-        });
-
-        console.info("Portfolio interactions initialized.");
+  /**
+   * Wait for reusable components.
+   * Handles scripts running before or after component loading.
+   */
+  function onComponentsReady(callback) {
+    if (
+      document.body.dataset.componentsLoaded === "true" ||
+      document.querySelector(".navbar, .footer, [data-component]")
+    ) {
+      callback();
+      return;
     }
 
-    // Wait until components have been inserted.
     document.addEventListener(
-        "portfolio:components-loaded",
-        initInteractions,
-        { once: true }
+      "portfolio:components-loaded",
+      callback,
+      { once: true }
+    );
+  }
+
+  /**
+   * Update copyright year automatically.
+   */
+  function updateCurrentYear() {
+    const currentYear = new Date().getFullYear();
+
+    document.querySelectorAll("[data-current-year]").forEach((element) => {
+      element.textContent = currentYear;
+    });
+  }
+
+  /**
+   * Back-to-top button.
+   */
+  function initializeBackToTop() {
+    const button = document.querySelector("[data-back-to-top]");
+
+    if (!button) return;
+
+    const visibilityThreshold = 400;
+
+    const updateVisibility = () => {
+      const shouldShow = window.scrollY > visibilityThreshold;
+
+      button.classList.toggle("is-visible", shouldShow);
+      button.setAttribute("aria-hidden", String(!shouldShow));
+      button.tabIndex = shouldShow ? 0 : -1;
+    };
+
+    button.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches
+          ? "instant"
+          : "smooth"
+      });
+    });
+
+    window.addEventListener("scroll", updateVisibility, {
+      passive: true
+    });
+
+    updateVisibility();
+  }
+
+  /**
+   * Smooth scrolling for same-page anchor links.
+   */
+  function initializeSmoothScrolling() {
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest('a[href^="#"]');
+
+      if (!link) return;
+
+      const href = link.getAttribute("href");
+
+      if (!href || href === "#") return;
+
+      let target;
+
+      try {
+        target = document.querySelector(href);
+      } catch {
+        return;
+      }
+
+      if (!target) return;
+
+      event.preventDefault();
+
+      target.scrollIntoView({
+        behavior: window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches
+          ? "instant"
+          : "smooth",
+        block: "start"
+      });
+
+      // Keep the URL in sync without triggering a page jump.
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, "", href);
+      }
+    });
+  }
+
+  /**
+   * External links opened in new tabs should be secure.
+   */
+  function secureExternalLinks() {
+    document.querySelectorAll('a[target="_blank"]').forEach((link) => {
+      const relValues = new Set(
+        (link.getAttribute("rel") || "")
+          .split(/\s+/)
+          .filter(Boolean)
+      );
+
+      relValues.add("noopener");
+      relValues.add("noreferrer");
+
+      link.setAttribute("rel", Array.from(relValues).join(" "));
+    });
+  }
+
+  /**
+   * Contact form feedback.
+   *
+   * Native FormSubmit forms are not intercepted.
+   * AJAX feedback is enabled only when data-ajax="true".
+   */
+  function initializeContactForms() {
+    const forms = document.querySelectorAll(
+      'form[data-ajax="true"]'
     );
 
-    // Support pages without component placeholders.
-    if (
-        document.documentElement.dataset.componentsLoaded === "true"
-    ) {
-        initInteractions();
+    forms.forEach((form) => {
+      if (form.dataset.interactionReady === "true") return;
+
+      form.dataset.interactionReady = "true";
+
+      form.addEventListener("submit", (event) => {
+        const status = form.querySelector("[data-form-status]");
+
+        if (!status) return;
+
+        event.preventDefault();
+
+        status.textContent =
+          "AJAX submission is not configured yet. Please use the standard form submission.";
+
+        status.setAttribute("role", "status");
+      });
+    });
+  }
+
+  /**
+   * Initialize the complete interaction system.
+   */
+  function initializeInteractions() {
+    if (initialized) return;
+
+    initialized = true;
+
+    updateCurrentYear();
+    initializeBackToTop();
+    initializeSmoothScrolling();
+    secureExternalLinks();
+    initializeContactForms();
+  }
+
+  // Public refresh function for dynamically inserted content.
+  window.PortfolioInteractions = {
+    refresh() {
+      updateCurrentYear();
+      secureExternalLinks();
+      initializeContactForms();
     }
+  };
 
+  onComponentsReady(initializeInteractions);
 })();
-
-/* =========================================
-   OPTIONAL BACK-TO-TOP BUTTON MARKUP
-
-   <button
-       type="button"
-       data-back-to-top
-       aria-label="Back to top"
-   >
-       ↑
-   </button>
-
-   Add class "is-visible" through JavaScript.
-========================================= */
