@@ -1,0 +1,353 @@
+
+/* FILE: css/layout.css */
+
+/* =========================================
+   GLOBAL CONTAINER
+========================================= */
+
+.container {
+    width: min(100% - 48px, var(--container-max));
+    margin-inline: auto;
+}
+
+.container-wide {
+    width: min(100% - 48px, 1440px);
+    margin-inline: auto;
+}
+
+.container-narrow {
+    width: min(100% - 48px, 850px);
+    margin-inline: auto;
+}
+
+/* =========================================
+   SECTION SPACING
+========================================= */
+
+.section-padding {
+    padding-block: var(--section-spacing);
+}
+
+.section-padding-sm {
+    padding-block: clamp(48px, 6vw, 80px);
+}
+
+.section-padding-lg {
+    padding-block: clamp(100px, 13vw, 180px);
+}
+
+.section-header {
+    margin-bottom: clamp(32px, 5vw, 60px);
+}
+
+.section-header.centered {
+    text-align: center;
+}
+
+.section-header.centered .section-heading,
+.section-header.centered .section-description {
+    margin-inline: auto;
+}
+
+/* =========================================
+   FLEX UTILITIES
+========================================= */
+
+.flex {
+    display: flex;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.align-start {
+    align-items: flex-start;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+/* =========================================
+   GRID UTILITIES
+========================================= */
+
+.grid {
+    display: grid;
+    gap: 24px;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.grid-auto {
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 260px), 1fr)
+    );
+}
+
+/* =========================================
+   COMMON PAGE STRUCTURES
+========================================= */
+
+.page-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: clip;
+}
+
+.page-section {
+    position: relative;
+    width: 100%;
+}
+
+.section-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--color-border);
+}
+
+.content-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.content-row {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+}
+
+.content-column {
+    flex: 1;
+    min-width: 0;
+}
+
+/* =========================================
+   TWO-COLUMN LAYOUTS
+========================================= */
+
+.split-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: clamp(32px, 6vw, 80px);
+}
+
+.split-layout.reverse > :first-child {
+    order: 2;
+}
+
+.split-layout.reverse > :last-child {
+    order: 1;
+}
+
+.split-layout-top {
+    align-items: start;
+}
+
+/* =========================================
+   IMAGE AND MEDIA LAYOUTS
+========================================= */
+
+.media-frame {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface);
+}
+
+.media-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-square {
+    aspect-ratio: 1 / 1;
+}
+
+.media-landscape {
+    aspect-ratio: 16 / 9;
+}
+
+.media-portrait {
+    aspect-ratio: 3 / 4;
+}
+
+/* =========================================
+   SPACING UTILITIES
+========================================= */
+
+.mt-auto {
+    margin-top: auto;
+}
+
+.mx-auto {
+    margin-inline: auto;
+}
+
+.gap-sm {
+    gap: 12px;
+}
+
+.gap-md {
+    gap: 24px;
+}
+
+.gap-lg {
+    gap: 40px;
+}
+
+.gap-xl {
+    gap: 64px;
+}
+
+/* =========================================
+   WIDTH UTILITIES
+========================================= */
+
+.w-full {
+    width: 100%;
+}
+
+.max-width-sm {
+    max-width: 480px;
+}
+
+.max-width-md {
+    max-width: 650px;
+}
+
+.max-width-lg {
+    max-width: 850px;
+}
+
+/* =========================================
+   RESPONSIVE TABLET
+========================================= */
+
+@media (max-width: 1024px) {
+    .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .content-row {
+        gap: 32px;
+    }
+
+    .split-layout {
+        gap: 36px;
+    }
+}
+
+/* =========================================
+   RESPONSIVE MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+    .container,
+    .container-wide,
+    .container-narrow {
+        width: min(100% - 36px, var(--container-max));
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .split-layout {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+
+    .split-layout.reverse > :first-child,
+    .split-layout.reverse > :last-child {
+        order: initial;
+    }
+
+    .content-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 28px;
+    }
+
+    .section-header {
+        margin-bottom: 32px;
+    }
+
+    .gap-xl {
+        gap: 40px;
+    }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+    .container,
+    .container-wide,
+    .container-narrow {
+        width: min(100% - 32px, var(--container-max));
+    }
+
+    .section-padding {
+        padding-block: 64px;
+    }
+
+    .section-padding-lg {
+        padding-block: 88px;
+    }
+
+    .gap-lg {
+        gap: 28px;
+    }
+}
