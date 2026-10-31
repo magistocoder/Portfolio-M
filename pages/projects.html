@@ -1,168 +1,345 @@
 
+<!--
+  FILE: projects.html
+  PROJECT: PORTFOLIO-M V2.0
+  BRAND: MAGISTO TECHY
+  LOCATION: Portfolio-M/pages/projects.html
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Projects | MAGISTO TECHY</title>
-  <meta name="description" content="Explore the digital projects, creative experiments, and content work of Abhinand A.S.">
+    <meta name="author" content="Abhinand A.S.">
+    <meta name="description" content="Explore the creative projects, digital platforms and content initiatives by Abhinand A.S.">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#080A0B">
 
-  <link rel="stylesheet" href="../css/style.css">
-  <script type="module" src="../js/main.js"></script>
+    <title>Projects & Creative Work | MAGISTO TECHY</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body data-root="../">
 
-  <a class="skip-link" href="#main">Skip to content</a>
+    <!-- Accessibility -->
+    <a href="#main-content" class="skip-link">
+        Skip to content
+    </a>
 
-  <div data-component="navbar"></div>
+    <!-- Navigation Component -->
+    <div data-component="navbar"></div>
 
-  <main id="main">
+    <main id="main-content">
 
-    <section class="page-hero">
-      <div class="container">
-        <p class="eyebrow">MY WORK & EXPERIMENTS</p>
+        <!-- Projects Hero -->
+        <section class="page-hero section">
+            <div class="container">
 
-        <h1>
-          Projects & 
-          <span class="text-accent">Creations.</span>
-        </h1>
+                <div class="section-heading reveal">
+                    <span class="eyebrow">MY CREATIVE SPACE</span>
 
-        <p class="section-description">
-          A collection of digital experiments, creative projects,
-          content initiatives, and ideas built through curiosity.
-        </p>
-      </div>
-    </section>
+                    <h1>
+                        Ideas turned into
+                        <span class="text-gradient">digital experiences.</span>
+                    </h1>
 
-    <section class="projects-section section-padding">
-      <div class="container">
+                    <p>
+                        A collection of creative projects, digital platforms
+                        and content initiatives I've developed or contributed to.
+                    </p>
+                </div>
 
-        <div class="section-heading">
-          <p class="eyebrow">SELECTED WORK</p>
-          <h2>Things I've <span class="text-accent">Created</span></h2>
-        </div>
-
-        <div class="projects-grid">
-
-          <article class="project-card">
-            <div class="project-image">
-              <img
-                src="../assets/projects/magisto-techy.jpg"
-                alt="MAGISTO TECHY content platform"
-                loading="lazy"
-              >
-              <span class="project-category">Content Creation</span>
             </div>
+        </section>
 
-            <div class="project-info">
-              <h3>MAGISTO TECHY</h3>
-              <p>
-                A technology-focused creator platform sharing
-                gadget insights, AI tools, tutorials, and digital trends.
-              </p>
-              <a href="https://instagram.com/magisto_techy"
-                 target="_blank"
-                 rel="noopener noreferrer">
-                Explore Platform ↗
-              </a>
+        <!-- Featured Projects -->
+        <section class="section projects-page">
+            <div class="container">
+
+                <div class="section-heading reveal">
+                    <span class="eyebrow">SELECTED WORK</span>
+                    <h2>
+                        Projects & 
+                        <span class="text-gradient">Platforms.</span>
+                    </h2>
+                </div>
+
+                <div class="projects-grid">
+
+                    <!-- Project 01 -->
+                    <article class="project-card reveal">
+
+                        <div class="project-image">
+                            <img
+                                src="../assets/projects/magisto-techy.jpg"
+                                alt="MAGISTO TECHY content platform"
+                                loading="lazy"
+                            >
+                        </div>
+
+                        <div class="project-content">
+                            <span class="project-category">
+                                TECH CONTENT PLATFORM
+                            </span>
+
+                            <h3>MAGISTO TECHY</h3>
+
+                            <p>
+                                A technology-focused content brand covering
+                                gadgets, apps, digital tools, AI and useful
+                                technology discoveries.
+                            </p>
+
+                            <div class="project-tags">
+                                <span>Technology</span>
+                                <span>Content Creation</span>
+                                <span>Social Media</span>
+                            </div>
+
+                            <a
+                                href="https://instagram.com/magisto_techy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="project-link"
+                            >
+                                Explore Platform ↗
+                            </a>
+                        </div>
+
+                    </article>
+
+                    <!-- Project 02 -->
+                    <article class="project-card reveal">
+
+                        <div class="project-image">
+                            <img
+                                src="../assets/projects/conneditz.jpg"
+                                alt="ConneditZ creative editing brand"
+                                loading="lazy"
+                            >
+                        </div>
+
+                        <div class="project-content">
+                            <span class="project-category">
+                                CREATIVE SERVICES
+                            </span>
+
+                            <h3>ConneditZ</h3>
+
+                            <p>
+                                A video editing initiative focused on
+                                short-form content and creative video
+                                production for digital platforms.
+                            </p>
+
+                            <div class="project-tags">
+                                <span>Video Editing</span>
+                                <span>Creative Production</span>
+                            </div>
+
+                            <span class="project-link">
+                                Creative Initiative
+                            </span>
+                        </div>
+
+                    </article>
+
+                    <!-- Project 03 -->
+                    <article class="project-card reveal">
+
+                        <div class="project-image">
+                            <img
+                                src="../assets/projects/lumivane.jpg"
+                                alt="LUMIVANE photography project"
+                                loading="lazy"
+                            >
+                        </div>
+
+                        <div class="project-content">
+                            <span class="project-category">
+                                PHOTOGRAPHY
+                            </span>
+
+                            <h3>LUMIVANE</h3>
+
+                            <p>
+                                A photography-focused creative page exploring
+                                product photography, visual composition
+                                and mobile photography.
+                            </p>
+
+                            <div class="project-tags">
+                                <span>Photography</span>
+                                <span>Product Visuals</span>
+                                <span>Creative Direction</span>
+                            </div>
+
+                            <span class="project-link">
+                                Photography Project
+                            </span>
+                        </div>
+
+                    </article>
+
+                    <!-- Project 04 -->
+                    <article class="project-card reveal">
+
+                        <div class="project-image">
+                            <img
+                                src="../assets/projects/portfolio.jpg"
+                                alt="Personal portfolio website project"
+                                loading="lazy"
+                            >
+                        </div>
+
+                        <div class="project-content">
+                            <span class="project-category">
+                                WEB DEVELOPMENT
+                            </span>
+
+                            <h3>Personal Portfolio</h3>
+
+                            <p>
+                                A personal digital portfolio built to
+                                showcase creative work, professional
+                                services, projects and collaborations.
+                            </p>
+
+                            <div class="project-tags">
+                                <span>HTML</span>
+                                <span>CSS</span>
+                                <span>JavaScript</span>
+                            </div>
+
+                            <span class="project-link">
+                                Current Website
+                            </span>
+                        </div>
+
+                    </article>
+
+                </div>
+
             </div>
-          </article>
+        </section>
 
-          <article class="project-card">
-            <div class="project-image">
-              <img
-                src="../assets/projects/conneditz.jpg"
-                alt="ConneditZ video editing agency"
-                loading="lazy"
-              >
-              <span class="project-category">Creative Services</span>
+        <!-- Project Approach -->
+        <section class="section project-approach">
+            <div class="container">
+
+                <div class="section-heading reveal">
+                    <span class="eyebrow">MY APPROACH</span>
+
+                    <h2>
+                        Every project starts with
+                        <span class="text-gradient">an idea.</span>
+                    </h2>
+
+                    <p>
+                        I focus on combining clear communication,
+                        creative execution and useful digital experiences.
+                    </p>
+                </div>
+
+                <div class="journey-grid">
+
+                    <article class="journey-card reveal">
+                        <span class="journey-number">01</span>
+                        <h3>Concept</h3>
+                        <p>
+                            Understanding the purpose, audience and
+                            creative direction behind each project.
+                        </p>
+                    </article>
+
+                    <article class="journey-card reveal">
+                        <span class="journey-number">02</span>
+                        <h3>Execution</h3>
+                        <p>
+                            Turning the concept into meaningful
+                            content, visuals or digital experiences.
+                        </p>
+                    </article>
+
+                    <article class="journey-card reveal">
+                        <span class="journey-number">03</span>
+                        <h3>Improvement</h3>
+                        <p>
+                            Learning from feedback and refining
+                            the work through experimentation.
+                        </p>
+                    </article>
+
+                </div>
+
             </div>
+        </section>
 
-            <div class="project-info">
-              <h3>ConneditZ</h3>
-              <p>
-                A video editing initiative focused on helping
-                creators and businesses produce engaging content.
-              </p>
-              <span class="project-status">Creative Initiative</span>
+        <!-- Contact CTA -->
+        <section class="section projects-cta">
+            <div class="container">
+
+                <div class="cta-card reveal">
+                    <span class="eyebrow">HAVE A PROJECT?</span>
+
+                    <h2>
+                        Let's build something
+                        <span class="text-gradient">worth sharing.</span>
+                    </h2>
+
+                    <p>
+                        Have a creative idea, product or collaboration
+                        in mind? Let's talk.
+                    </p>
+
+                    <a href="contact.html" class="btn btn-primary">
+                        Start a Conversation
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
+
             </div>
-          </article>
+        </section>
 
-          <article class="project-card">
-            <div class="project-image">
-              <img
-                src="../assets/projects/lumivane.jpg"
-                alt="LUMIVANE photography project"
-                loading="lazy"
-              >
-              <span class="project-category">Photography</span>
-            </div>
+    </main>
 
-            <div class="project-info">
-              <h3>LUMIVANE</h3>
-              <p>
-                A photography-focused creative brand exploring
-                product photography and visual storytelling.
-              </p>
-              <span class="project-status">Creative Project</span>
-            </div>
-          </article>
+    <!-- Footer Component -->
+    <div data-component="footer"></div>
 
-          <article class="project-card">
-            <div class="project-image">
-              <img
-                src="../assets/projects/portfolio.jpg"
-                alt="PORTFOLIO-M website project"
-                loading="lazy"
-              >
-              <span class="project-category">Web Development</span>
-            </div>
+    <!-- Back To Top -->
+    <button
+        class="back-to-top"
+        type="button"
+        data-back-to-top
+        aria-label="Back to top"
+    >
+        ↑
+    </button>
 
-            <div class="project-info">
-              <h3>PORTFOLIO-M</h3>
-              <p>
-                A personal portfolio website designed to showcase
-                creative work, services, achievements, and collaborations.
-              </p>
-              <span class="project-status">In Development</span>
-            </div>
-          </article>
+    <!-- JavaScript: Component Loader -->
+    <script src="../js/component-loader.js" defer></script>
 
-        </div>
-      </div>
-    </section>
+    <!-- JavaScript: Navigation -->
+    <script src="../js/navigation.js" defer></script>
 
-    <section class="projects-cta section-padding">
-      <div class="container">
-        <div class="cta-content">
-          <p class="eyebrow">HAVE AN IDEA?</p>
+    <!-- JavaScript: Animations -->
+    <script src="../js/animations.js" defer></script>
 
-          <h2>
-            Let's Build Something
-            <span class="text-accent">Meaningful.</span>
-          </h2>
+    <!-- JavaScript: Interactions -->
+    <script src="../js/interactions.js" defer></script>
 
-          <p>
-            Have a project, creative idea, or collaboration
-            opportunity? Let's discuss it.
-          </p>
-
-          <a href="contact.html" class="btn btn-primary">
-            Start a Conversation ↗
-          </a>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <div data-component="footer"></div>
+    <!-- JavaScript: Main Initialization -->
+    <script src="../js/main.js" defer></script>
 
 </body>
 </html>
