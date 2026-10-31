@@ -2,158 +2,231 @@
 /* =========================================================
    FILE: js/navigation.js
    PROJECT: PORTFOLIO-M V2.0
-   PURPOSE: Responsive navigation and mobile menu handling
+   PURPOSE: Responsive navigation and mobile menu
+   BRAND: MAGISTO TECHY
    ========================================================= */
 
 (() => {
   "use strict";
 
-  const NAVIGATION = {
-    desktopBreakpoint: 900,
+  // -------------------------------------------------------
+  // CONFIGURATION
+  // -------------------------------------------------------
+
+  const CONFIG = {
+    breakpoint: 900,
+    navbarSelector: ".navbar",
+    toggleSelector: ".navbar-toggle",
+    linksSelector: ".navbar-links",
     initializedAttribute: "data-navigation-ready"
   };
 
-  let initialized = false;
   let mediaQuery = null;
 
-  /**
-   * Run callback when reusable components are available.
-   * Handles both early and late script execution.
-   */
-  function onComponentsReady(callback) {
+  // -------------------------------------------------------
+  // INITIALIZATION GUARD
+  // -------------------------------------------------------
+
+  function initializeNavigation() {
+    const navbar = document.querySelector(
+      CONFIG.navbarSelector
+    );
+
+    if (!navbar) {
+      console.warn("[Navigation] Navbar not found.");
+      return;
+    }
+
     if (
-      document.body.dataset.componentsLoaded === "true" ||
-      document.querySelector(".navbar")
+      navbar.getAttribute(CONFIG.initializedAttribute) === "true"
     ) {
-      callback();
+      return;
+    }
+
+    const toggle = navbar.querySelector(
+      CONFIG.toggleSelector
+    );
+
+    const links = navbar.querySelector(
+      CONFIG.linksSelector
+    );
+
+    if (!toggle || !links) {
+      console.warn(
+        "[Navigation] Toggle or navigation links missing."
+      );
+      return;
+    }
+
+    // -----------------------------------------------------
+    // ACCESSIBILITY SETUP
+    // -----------------------------------------------------
+
+    if (!links.id) {
+      links.id = "primary-navigation";
+    }
+
+    toggle.type = "button";
+
+    toggle.setAttribute("aria-controls", links.id);
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute(
+      "aria-label",
+      "Open navigation menu"
+    );
+
+    // -----------------------------------------------------
+    // MENU FUNCTIONS
+    // -----------------------------------------------------
+
+    function closeMenu() {
+      navbar.classList.remove("is-open");
+      links.classList.remove("is-open");
+
+      toggle.setAttribute("aria-expanded", "false");
+
+      toggle.setAttribute(
+        "aria-label",
+        "Open navigation menu"
+      );
+    }
+
+    function openMenu() {
+      navbar.classList.add("is-open");
+      links.classList.add("is-open");
+
+      toggle.setAttribute("aria-expanded", "true");
+
+      toggle.setAttribute(
+        "aria-label",
+        "Close navigation menu"
+      );
+    }
+
+    function toggleMenu() {
+      const isOpen =
+        toggle.getAttribute("aria-expanded") === "true";
+
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    }
+
+    // -----------------------------------------------------
+    // MOBILE MENU TOGGLE
+    // -----------------------------------------------------
+
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggleMenu();
+    });
+
+    // -----------------------------------------------------
+    // NAVIGATION LINK HANDLING
+    // -----------------------------------------------------
+
+    links.addEventListener("click", (event) => {
+      const target = event.target;
+
+      if (!(target instanceof Element)) return;
+
+      const link = target.closest("a");
+
+      if (!link || !links.contains(link)) return;
+
+      closeMenu();
+    });
+
+    // -----------------------------------------------------
+    // CLICK OUTSIDE TO CLOSE
+    // -----------------------------------------------------
+
+    document.addEventListener("click", (event) => {
+      if (!navbar.contains(event.target)) {
+        closeMenu();
+      }
+    });
+
+    // -----------------------------------------------------
+    // ESCAPE KEY SUPPORT
+    // -----------------------------------------------------
+
+    document.addEventListener("keydown", (event) => {
+      const isOpen =
+        toggle.getAttribute("aria-expanded") === "true";
+
+      if (event.key === "Escape" && isOpen) {
+        closeMenu();
+        toggle.focus();
+      }
+    });
+
+    // -----------------------------------------------------
+    // RESPONSIVE BREAKPOINT
+    // -----------------------------------------------------
+
+    mediaQuery = window.matchMedia(
+      `(min-width: ${CONFIG.breakpoint}px)`
+    );
+
+    function handleBreakpointChange(event) {
+      if (event.matches) {
+        closeMenu();
+      }
+    }
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener(
+        "change",
+        handleBreakpointChange
+      );
+    } else {
+      mediaQuery.addListener(handleBreakpointChange);
+    }
+
+    // -----------------------------------------------------
+    // BROWSER NAVIGATION RESET
+    // -----------------------------------------------------
+
+    window.addEventListener("pageshow", () => {
+      closeMenu();
+    });
+
+    // -----------------------------------------------------
+    // MARK INITIALIZATION COMPLETE
+    // -----------------------------------------------------
+
+    navbar.setAttribute(
+      CONFIG.initializedAttribute,
+      "true"
+    );
+
+    console.info(
+      "[Navigation] Successfully initialized."
+    );
+  }
+
+  // -------------------------------------------------------
+  // WAIT FOR COMPONENT LOADER
+  // -------------------------------------------------------
+
+  function startNavigation() {
+    if (
+      document.body.dataset.componentsLoaded === "true"
+    ) {
+      initializeNavigation();
       return;
     }
 
     document.addEventListener(
       "portfolio:components-loaded",
-      callback,
+      initializeNavigation,
       { once: true }
     );
   }
 
-  function closeMenu(navbar, toggle, links) {
-    navbar.classList.remove("is-open");
-    links.classList.remove("is-open");
+  startNavigation();
 
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", "Open navigation menu");
-  }
-
-  function openMenu(navbar, toggle, links) {
-    navbar.classList.add("is-open");
-    links.classList.add("is-open");
-
-    toggle.setAttribute("aria-expanded", "true");
-    toggle.setAttribute("aria-label", "Close navigation menu");
-  }
-
-  function initializeNavigation() {
-    if (initialized) return;
-
-    const navbar = document.querySelector(".navbar");
-    if (!navbar) return;
-
-    if (navbar.hasAttribute(NAVIGATION.initializedAttribute)) {
-      initialized = true;
-      return;
-    }
-
-    const toggle = navbar.querySelector(".navbar-toggle");
-    const links = navbar.querySelector(".navbar-links");
-
-    if (!toggle || !links) {
-      console.warn(
-        "Navigation initialization skipped: toggle or links element missing."
-      );
-      return;
-    }
-
-    initialized = true;
-    navbar.setAttribute(NAVIGATION.initializedAttribute, "true");
-
-    // Accessibility setup
-    if (!links.id) {
-      links.id = "primary-navigation";
-    }
-
-    toggle.setAttribute("aria-controls", links.id);
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", "Open navigation menu");
-    toggle.setAttribute("type", "button");
-
-    // Responsive breakpoint
-    mediaQuery = window.matchMedia(
-      `(min-width: ${NAVIGATION.desktopBreakpoint}px)`
-    );
-
-    // Toggle mobile navigation
-    toggle.addEventListener("click", () => {
-      const isOpen = toggle.getAttribute("aria-expanded") === "true";
-
-      if (isOpen) {
-        closeMenu(navbar, toggle, links);
-      } else {
-        openMenu(navbar, toggle, links);
-      }
-    });
-
-    // Close menu after selecting a navigation link
-    links.addEventListener("click", (event) => {
-      const link = event.target.closest("a");
-
-      if (link) {
-        closeMenu(navbar, toggle, links);
-      }
-    });
-
-    // Close when clicking outside the navbar
-    document.addEventListener("click", (event) => {
-      if (
-        !navbar.contains(event.target) &&
-        toggle.getAttribute("aria-expanded") === "true"
-      ) {
-        closeMenu(navbar, toggle, links);
-      }
-    });
-
-    // Close when Escape is pressed
-    document.addEventListener("keydown", (event) => {
-      if (
-        event.key === "Escape" &&
-        toggle.getAttribute("aria-expanded") === "true"
-      ) {
-        closeMenu(navbar, toggle, links);
-        toggle.focus();
-      }
-    });
-
-    // Close mobile menu when switching to desktop layout
-    const handleBreakpointChange = (event) => {
-      if (event.matches) {
-        closeMenu(navbar, toggle, links);
-      }
-    };
-
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", handleBreakpointChange);
-    } else {
-      // Compatibility fallback for older browsers
-      mediaQuery.addListener(handleBreakpointChange);
-    }
-
-    // Reset menu state after browser back/forward navigation
-    window.addEventListener("pageshow", () => {
-      if (mediaQuery.matches) {
-        closeMenu(navbar, toggle, links);
-      }
-    });
-  }
-
-  // Start only after the navbar component is available
-  onComponentsReady(initializeNavigation);
 })();
