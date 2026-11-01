@@ -1,23 +1,21 @@
 
 /* =========================================================
-   FILE: js/component-loader.js
-   PROJECT: PORTFOLIO-M V2.0
-   PURPOSE: Reliable HTML component and script loading
-   BRAND: MAGISTO TECHY
+   PORTFOLIO-M — COMPONENT LOADER
+   Simple • Reliable • No duplicate scripts
    ========================================================= */
 
 (() => {
   "use strict";
 
-  // -------------------------------------------------------
-  // CONFIGURATION
-  // -------------------------------------------------------
+  if (window.PortfolioLoaderInitialized) return;
+  window.PortfolioLoaderInitialized = true;
 
   const ROOT = document.body.dataset.root || "./";
+  const WEBSITE_ROOT = ROOT.endsWith("/") ? ROOT : `${ROOT}/`;
+
+  const COMPONENT_PATH = "components/";
 
   const COMPONENT_SELECTOR = "[data-component]";
-
-  const COMPONENTS_PATH = "components/";
 
   const SCRIPTS = [
     "js/navigation.js",
@@ -26,19 +24,12 @@
     "js/main.js"
   ];
 
-  // Normalize the website root.
-  const WEBSITE_ROOT = ROOT.endsWith("/")
-    ? ROOT
-    : `${ROOT}/`;
-
-  // -------------------------------------------------------
-  // PATH NORMALIZATION
-  // -------------------------------------------------------
+  /* -------------------------------------------------------
+     PATH HANDLING
+  ------------------------------------------------------- */
 
   function normalizePath(value) {
-    if (!value || typeof value !== "string") {
-      return value;
-    }
+    if (!value || typeof value !== "string") return value;
 
     const path = value.trim();
 
@@ -59,10 +50,6 @@
     return `${WEBSITE_ROOT}${cleanPath}`;
   }
 
-  // -------------------------------------------------------
-  // NORMALIZE COMPONENT HTML PATHS
-  // -------------------------------------------------------
-
   function normalizeComponentPaths(fragment) {
     const attributes = [
       "href",
@@ -72,58 +59,46 @@
       "data-src"
     ];
 
-    fragment.querySelectorAll("*").forEach((element) => {
-      attributes.forEach((attribute) => {
+    fragment.querySelectorAll("*").forEach(element => {
+      attributes.forEach(attribute => {
         if (!element.hasAttribute(attribute)) return;
 
-        const original = element.getAttribute(attribute);
+        const value = element.getAttribute(attribute);
 
-        if (!original) return;
-
-        const normalized = normalizePath(original);
-
-        element.setAttribute(attribute, normalized);
+        if (value) {
+          element.setAttribute(
+            attribute,
+            normalizePath(value)
+          );
+        }
       });
     });
   }
 
-  // -------------------------------------------------------
-  // LOAD INDIVIDUAL COMPONENT
-  // -------------------------------------------------------
+  /* -------------------------------------------------------
+     LOAD HTML COMPONENTS
+  ------------------------------------------------------- */
 
   async function loadComponent(slot) {
     const name = slot.dataset.component;
 
     if (!name || !/^[a-z0-9-]+$/i.test(name)) {
-      console.error("Invalid component name:", name);
-
-      return {
-        name: name || "unknown",
-        success: false
-      };
+      console.error("[Portfolio] Invalid component:", name);
+      return false;
     }
 
-    const url =
-      `${WEBSITE_ROOT}${COMPONENTS_PATH}${name}.html`;
+    const url = `${WEBSITE_ROOT}${COMPONENT_PATH}${name}.html`;
 
     try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Accept: "text/html"
-        }
-      });
+      const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(
-          `HTTP ${response.status}: ${response.statusText}`
-        );
+        throw new Error(`HTTP ${response.status}`);
       }
 
       const html = await response.text();
 
       const template = document.createElement("template");
-
       template.innerHTML = html.trim();
 
       normalizeComponentPaths(template.content);
@@ -134,60 +109,39 @@
 
       slot.dataset.componentLoaded = "true";
 
-      console.info(`[Portfolio] Loaded: ${name}`);
-
-      return {
-        name,
-        success: true
-      };
+      return true;
 
     } catch (error) {
       console.error(
-        `[Portfolio] Failed to load ${name}:`,
+        `[Portfolio] Component failed: ${name}`,
         error
       );
 
       slot.innerHTML = `
         <div class="component-error" role="alert">
           <p>Unable to load this section.</p>
-          <small>${name}</small>
         </div>
       `;
 
       slot.dataset.componentLoaded = "false";
 
-      return {
-        name,
-        success: false,
-        error: error.message
-      };
+      return false;
     }
   }
 
-  // -------------------------------------------------------
-  // LOAD ALL HTML COMPONENTS
-  // -------------------------------------------------------
-
   async function loadAllComponents() {
-    const slots = Array.from(
-      document.querySelectorAll(COMPONENT_SELECTOR)
-    );
+    const slots = [
+      ...document.querySelectorAll(COMPONENT_SELECTOR)
+    ];
 
     const results = await Promise.all(
       slots.map(loadComponent)
     );
 
-    const successful = results.filter(
-      result => result.success
-    ).length;
-
-    const failed = results.length - successful;
-
     const details = {
-      results,
       total: results.length,
-      successful,
-      failed
+      successful: results.filter(Boolean).length,
+      failed: results.filter(result => !result).length
     };
 
     document.body.dataset.componentsLoaded = "true";
@@ -198,38 +152,48 @@
       })
     );
 
-    console.info(
-      `[Portfolio] Components: ${successful}/${results.length} loaded.`
-    );
-
     return details;
   }
 
-  // -------------------------------------------------------
-  // LOAD JAVASCRIPT FILES SEQUENTIALLY
-  // -------------------------------------------------------
+  /* -------------------------------------------------------
+     PREVENT DUPLICATE SCRIPT LOADING
+  ------------------------------------------------------- */
+
+  function isScriptAlreadyIncluded(path) {
+    return [...document.scripts].some(script => {
+      if (!script.src) return false;
+
+      try {
+        const url = new URL(script.src, document.baseURI);
+
+        return url.pathname.endsWith(`/${path}`);
+      } catch {
+        return false;
+      }
+    });
+  }
 
   function loadScript(path) {
     return new Promise((resolve, reject) => {
+
+      if (isScriptAlreadyIncluded(path)) {
+        console.info(`[Portfolio] Already included: ${path}`);
+        resolve(path);
+        return;
+      }
+
       const script = document.createElement("script");
 
       script.src = `${WEBSITE_ROOT}${path}`;
-
       script.async = false;
 
       script.onload = () => {
-        console.info(`[Portfolio] Script loaded: ${path}`);
+        console.info(`[Portfolio] Loaded: ${path}`);
         resolve(path);
       };
 
       script.onerror = () => {
-        const error = new Error(
-          `Unable to load script: ${path}`
-        );
-
-        console.error("[Portfolio]", error);
-
-        reject(error);
+        reject(new Error(`Failed to load ${path}`));
       };
 
       document.body.appendChild(script);
@@ -249,6 +213,8 @@
         });
 
       } catch (error) {
+        console.error("[Portfolio]", error);
+
         results.push({
           path,
           success: false,
@@ -260,64 +226,45 @@
     return results;
   }
 
-  // -------------------------------------------------------
-  // INITIALIZE PORTFOLIO
-  // -------------------------------------------------------
+  /* -------------------------------------------------------
+     INITIALIZATION
+  ------------------------------------------------------- */
 
   async function initializePortfolio() {
-    console.info("[Portfolio] Initialization started.");
+    console.info("[Portfolio] Starting...");
 
-    try {
-      // First: Load all HTML components.
-      const components = await loadAllComponents();
+    const components = await loadAllComponents();
 
-      // Second: Load dependent JavaScript files.
-      const scripts = await loadAllScripts();
+    const scripts = await loadAllScripts();
 
-      const successfulScripts = scripts.filter(
-        script => script.success
-      ).length;
+    const details = {
+      components,
+      scripts,
+      ready: true
+    };
 
-      document.body.dataset.portfolioReady = "true";
+    document.body.dataset.portfolioReady = "true";
 
-      const details = {
-        components,
-        scripts,
-        successfulScripts,
-        totalScripts: scripts.length
-      };
+    document.dispatchEvent(
+      new CustomEvent("portfolio:ready", {
+        detail: details
+      })
+    );
 
-      document.dispatchEvent(
-        new CustomEvent("portfolio:ready", {
-          detail: details
-        })
-      );
+    console.info("[Portfolio] Ready.", details);
 
-      console.info(
-        "[Portfolio] Initialization completed.",
-        details
-      );
-
-      return details;
-
-    } catch (error) {
-      document.body.dataset.portfolioReady = "false";
-
-      console.error(
-        "[Portfolio] Initialization failed:",
-        error
-      );
-
-      return {
-        success: false,
-        error: error.message
-      };
-    }
+    return details;
   }
 
-  // -------------------------------------------------------
-  // PUBLIC API
-  // -------------------------------------------------------
+  /* -------------------------------------------------------
+     PUBLIC ACCESS
+  ------------------------------------------------------- */
+
+  window.PortfolioLoader = {
+    loadAllComponents,
+    loadAllScripts,
+    initialize: initializePortfolio
+  };
 
   window.portfolioComponentsReady = initializePortfolio();
 
