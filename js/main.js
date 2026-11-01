@@ -1,36 +1,41 @@
 
 /* =========================================================
    FILE: js/main.js
-   PROJECT: PORTFOLIO-M V2.0
+   PROJECT: PORTFOLIO-M
    PURPOSE: Main website initialization
+   DESIGN: Liquid Glass UI
    ========================================================= */
 
 (() => {
   "use strict";
 
+  // Prevent duplicate execution if the file is loaded twice.
+  if (window.PortfolioMainInitialized) return;
+  window.PortfolioMainInitialized = true;
+
   const Portfolio = {
     initialized: false,
 
-    /**
-     * Start the website after reusable components load.
-     */
-    async init() {
+    init() {
       if (this.initialized) return;
 
       this.initialized = true;
 
       this.setCurrentYear();
       this.setActiveNavigation();
-      this.markPageReady();
+      this.initializeExternalLinks();
+      this.initializePageVisibility();
 
-      window.dispatchEvent(
-        new CustomEvent("portfolio:ready")
-      );
+      document.documentElement.classList.add("portfolio-ready");
+      document.body.dataset.portfolioReady = "true";
+
+      console.info("[Portfolio] Main initialization complete.");
     },
 
-    /**
-     * Automatically update copyright year.
-     */
+    // -----------------------------------------------------
+    // COPYRIGHT YEAR
+    // -----------------------------------------------------
+
     setCurrentYear() {
       const year = new Date().getFullYear();
 
@@ -41,107 +46,136 @@
       );
     },
 
-    /**
-     * Highlight the navigation link matching
-     * the current page.
-     */
+    // -----------------------------------------------------
+    // PATH NORMALIZATION
+    // -----------------------------------------------------
+
+    normalizePath(path) {
+      if (!path) return "/";
+
+      let normalized = path
+        .replace(/\/+/g, "/")
+        .replace(/\/index\.html$/i, "");
+
+      if (normalized.length > 1) {
+        normalized = normalized.replace(/\/+$/, "");
+      }
+
+      return normalized || "/";
+    },
+
+    // -----------------------------------------------------
+    // ACTIVE NAVIGATION
+    // -----------------------------------------------------
+
     setActiveNavigation() {
+      const currentURL = new URL(window.location.href);
+
       const currentPath = this.normalizePath(
-        window.location.pathname
+        currentURL.pathname
       );
 
-      document.querySelectorAll(".navbar-links a[href]").forEach(
+      const navigationLinks = document.querySelectorAll(
+        ".nav-menu a[href], " +
+        ".navbar-links a[href], " +
+        ".mobile-bottom-nav a[href]"
+      );
+
+      navigationLinks.forEach((link) => {
+        const href = link.getAttribute("href");
+
+        if (
+          !href ||
+          href.startsWith("#") ||
+          href.startsWith("mailto:") ||
+          href.startsWith("tel:") ||
+          href.startsWith("javascript:")
+        ) {
+          return;
+        }
+
+        let linkURL;
+
+        try {
+          linkURL = new URL(href, window.location.href);
+        } catch {
+          return;
+        }
+
+        if (linkURL.origin !== currentURL.origin) return;
+
+        const linkPath = this.normalizePath(
+          linkURL.pathname
+        );
+
+        const isActive = linkPath === currentPath;
+
+        link.classList.toggle("active", isActive);
+
+        if (isActive) {
+          link.setAttribute("aria-current", "page");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+    },
+
+    // -----------------------------------------------------
+    // EXTERNAL LINK SECURITY
+    // -----------------------------------------------------
+
+    initializeExternalLinks() {
+      document.querySelectorAll('a[target="_blank"]').forEach(
         (link) => {
-          const href = link.getAttribute("href");
-
-          if (
-            !href ||
-            href.startsWith("#") ||
-            href.startsWith("mailto:") ||
-            href.startsWith("tel:")
-          ) {
-            return;
-          }
-
-          let linkURL;
-
-          try {
-            linkURL = new URL(href, window.location.href);
-          } catch {
-            return;
-          }
-
-          if (linkURL.origin !== window.location.origin) {
-            return;
-          }
-
-          const linkPath = this.normalizePath(
-            linkURL.pathname
+          const relValues = new Set(
+            (link.getAttribute("rel") || "")
+              .split(/\s+/)
+              .filter(Boolean)
           );
 
-          const isHomePage =
-            currentPath.endsWith("/index.html") ||
-            currentPath === "/Portfolio-M/" ||
-            currentPath === "/";
+          relValues.add("noopener");
+          relValues.add("noreferrer");
 
-          const matchesHome =
-            isHomePage &&
-            (
-              linkPath.endsWith("/index.html") ||
-              linkPath === "/Portfolio-M/" ||
-              linkPath === "/"
-            );
-
-          const isActive =
-            matchesHome ||
-            (
-              !isHomePage &&
-              linkPath === currentPath
-            );
-
-          if (isActive) {
-            link.classList.add("active");
-            link.setAttribute("aria-current", "page");
-          } else {
-            link.classList.remove("active");
-            link.removeAttribute("aria-current");
-          }
+          link.setAttribute(
+            "rel",
+            Array.from(relValues).join(" ")
+          );
         }
       );
     },
 
-    /**
-     * Normalize paths for consistent comparison.
-     */
-    normalizePath(path) {
-      if (!path) return "/";
+    // -----------------------------------------------------
+    // PAGE VISIBILITY
+    // -----------------------------------------------------
 
-      let normalized = path.replace(/\/+/g, "/");
+    initializePageVisibility() {
+      document.body.classList.add("page-loaded");
 
-      if (normalized.length > 1) {
-        normalized = normalized.replace(/\/$/, "");
-      }
-
-      return normalized;
+      // Remove the loading state if the browser restores
+      // the page from its back-forward cache.
+      window.addEventListener("pageshow", () => {
+        document.body.classList.add("page-loaded");
+      });
     },
 
-    /**
-     * Mark the website as initialized.
-     */
-    markPageReady() {
-      document.documentElement.classList.add(
-        "portfolio-ready"
-      );
+    // -----------------------------------------------------
+    // REFRESH API
+    // -----------------------------------------------------
 
-      document.body.dataset.portfolioReady = "true";
+    refresh() {
+      this.setCurrentYear();
+      this.setActiveNavigation();
+      this.initializeExternalLinks();
     }
   };
 
-  /**
-   * Wait for component loading.
-   * The promise also handles the case where components
-   * have already finished loading.
-   */
+  // Make the controller available to other project scripts.
+  window.Portfolio = Portfolio;
+
+  // -------------------------------------------------------
+  // COMPONENT LOADING COMPATIBILITY
+  // -------------------------------------------------------
+
   function startPortfolio() {
     const readyPromise = window.portfolioComponentsReady;
 
@@ -150,10 +184,12 @@
         .then(() => Portfolio.init())
         .catch((error) => {
           console.error(
-            "Portfolio component loading encountered an error:",
+            "[Portfolio] Component loading error:",
             error
           );
 
+          // Keep the main page functional even if a component
+          // fails to load.
           Portfolio.init();
         });
 
@@ -161,8 +197,7 @@
     }
 
     if (
-      document.body.dataset.componentsLoaded === "true" ||
-      document.querySelector(".navbar")
+      document.body.dataset.componentsLoaded === "true"
     ) {
       Portfolio.init();
       return;
@@ -174,9 +209,6 @@
       { once: true }
     );
   }
-
-  // Make the main controller available to other scripts.
-  window.Portfolio = Portfolio;
 
   startPortfolio();
 
