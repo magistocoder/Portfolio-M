@@ -1,24 +1,24 @@
 
 /* =========================================================
-   PORTFOLIO-M — SCROLL ANIMATION ENGINE
-   Replays reveal animations on scroll down AND scroll up.
+   PORTFOLIO-M — SCROLL ANIMATION SYSTEM
+   Replays on scroll up and down.
+   Safe for Instagram Reel cards and embedded videos.
    ========================================================= */
 
 (() => {
   "use strict";
 
+  // Prevent duplicate initialization.
   if (window.PortfolioAnimationsInitialized) return;
   window.PortfolioAnimationsInitialized = true;
 
-  const CONFIG = {
-    selector: ".reveal, .reveal-left, .reveal-right",
-    visibleClass: "is-visible",
-    staggerDelay: 85,
-    threshold: 0.12,
-    rootMargin: "0px 0px -8% 0px"
-  };
+  const REVEAL_SELECTOR = [
+    ".reveal",
+    ".reveal-left",
+    ".reveal-right"
+  ].join(",");
 
-  const AUTO_REVEAL = [
+  const AUTO_REVEAL_SELECTOR = [
     ".hero-content",
     ".hero-visual",
     ".section-heading",
@@ -26,82 +26,118 @@
     ".statistics-grid > *",
     ".skills-grid > *",
     ".projects-grid > *",
+    ".reels-grid > *",
+    ".reel-card",
     ".services-preview-grid > *",
     ".journey-grid > *",
-    ".brand-grid > *",
     ".contact-cta-card",
     ".footer-main > *"
   ].join(",");
 
-  const STAGGER_GROUPS = [
+  const STAGGER_GROUP_SELECTOR = [
     ".statistics-grid",
     ".skills-grid",
     ".projects-grid",
+    ".reels-grid",
     ".services-preview-grid",
     ".journey-grid",
-    ".brand-grid",
     ".footer-main"
   ].join(",");
+
+  const CONFIG = {
+    staggerDelay: 80,
+    threshold: 0.12,
+    rootMargin: "0px 0px -8% 0px"
+  };
 
   let observer = null;
   let initialized = false;
 
-  const motionQuery = window.matchMedia(
+  const reducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   );
 
-  function getElements(root, selector) {
+  // Find matching elements, including the root itself.
+  function findElements(root, selector) {
     const elements = [];
 
-    if (root instanceof Element && root.matches(selector)) {
+    if (
+      root instanceof Element &&
+      root.matches(selector)
+    ) {
       elements.push(root);
     }
 
     if (root.querySelectorAll) {
-      elements.push(...root.querySelectorAll(selector));
+      elements.push(
+        ...root.querySelectorAll(selector)
+      );
     }
 
     return [...new Set(elements)];
   }
 
+  // Add reveal classes to selected page elements.
+  // Only the card/container is animated, not its video.
   function prepareAutomaticReveals(root = document) {
-    getElements(root, AUTO_REVEAL).forEach((element) => {
-      element.classList.add("reveal");
+    const elements = findElements(
+      root,
+      AUTO_REVEAL_SELECTOR
+    );
+
+    elements.forEach((element) => {
+      const alreadyHasRevealClass =
+        element.classList.contains("reveal") ||
+        element.classList.contains("reveal-left") ||
+        element.classList.contains("reveal-right");
+
+      if (!alreadyHasRevealClass) {
+        element.classList.add("reveal");
+      }
     });
   }
 
-  function prepareStaggerGroups(root = document) {
-    getElements(root, STAGGER_GROUPS).forEach((group) => {
-      Array.from(group.children).forEach((child, index) => {
-        child.style.transitionDelay = motionQuery.matches
-          ? "0ms"
-          : `${Math.min(index, 7) * CONFIG.staggerDelay}ms`;
-      });
+  // Add a small stagger effect to grid children.
+  function initializeStaggerGroups(root = document) {
+    const groups = findElements(
+      root,
+      STAGGER_GROUP_SELECTOR
+    );
+
+    groups.forEach((group) => {
+      Array.from(group.children).forEach(
+        (child, index) => {
+          child.style.transitionDelay =
+            reducedMotion.matches
+              ? "0ms"
+              : `${Math.min(index, 5) * CONFIG.staggerDelay}ms`;
+        }
+      );
     });
   }
 
-  function revealAll(root = document) {
-    getElements(root, CONFIG.selector).forEach((element) => {
-      element.classList.add(CONFIG.visibleClass);
+  // Show elements immediately when animations are disabled.
+  function revealImmediately(elements) {
+    elements.forEach((element) => {
+      element.classList.add("is-visible");
       element.style.transitionDelay = "0ms";
     });
   }
 
+  // Continuously observe elements.
+  // This allows animations to replay in both directions.
   function createObserver() {
-    if (!("IntersectionObserver" in window)) return null;
+    if (!("IntersectionObserver" in window)) {
+      return null;
+    }
 
     return new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const element = entry.target;
-
           if (entry.isIntersecting) {
-            // Animate into view.
-            element.classList.add(CONFIG.visibleClass);
+            entry.target.classList.add("is-visible");
           } else {
-            // Reset when leaving view.
-            // This allows the animation to replay on re-entry.
-            element.classList.remove(CONFIG.visibleClass);
+            entry.target.classList.remove("is-visible");
           }
         });
       },
@@ -113,10 +149,13 @@
   }
 
   function observeElements(root = document) {
-    const elements = getElements(root, CONFIG.selector);
+    const elements = findElements(
+      root,
+      REVEAL_SELECTOR
+    );
 
-    if (motionQuery.matches || !observer) {
-      revealAll(root);
+    if (reducedMotion.matches || !observer) {
+      revealImmediately(elements);
       return;
     }
 
@@ -125,16 +164,12 @@
     });
   }
 
+  // Main initialization.
   function initializeAnimations() {
-    if (initialized) {
-      refresh(document);
-      return;
-    }
-
-    initialized = true;
+    if (initialized) return;
 
     prepareAutomaticReveals();
-    prepareStaggerGroups();
+    initializeStaggerGroups();
 
     observer = createObserver();
 
@@ -142,40 +177,49 @@
 
     observeElements();
 
-    console.info("[Portfolio] Scroll animations initialized.");
+    initialized = true;
+
+    console.info(
+      "[Portfolio Animations] Ready."
+    );
   }
 
-  function refresh(root = document) {
-    if (!initialized) {
-      initializeAnimations();
-      return;
-    }
-
+  // Refresh animations after dynamically loaded content.
+  function refreshAnimations(root = document) {
     prepareAutomaticReveals(root);
-    prepareStaggerGroups(root);
+    initializeStaggerGroups(root);
     observeElements(root);
   }
 
+  // Handle device accessibility preferences.
   function handleMotionChange(event) {
     if (event.matches) {
-      if (observer) observer.disconnect();
-      revealAll();
+      if (observer) {
+        observer.disconnect();
+        observer = null;
+      }
+
+      revealImmediately(
+        findElements(document, REVEAL_SELECTOR)
+      );
+
       return;
     }
 
-    if (observer) observer.disconnect();
+    if (!initialized) return;
 
     observer = createObserver();
 
-    getElements(document, CONFIG.selector).forEach((element) => {
-      element.classList.remove(CONFIG.visibleClass);
-    });
-
-    observeElements();
+    if (observer) {
+      observeElements();
+    }
   }
 
-  function start() {
-    if (document.body.dataset.componentsLoaded === "true") {
+  // Wait until shared page components are available.
+  function startAnimations() {
+    if (
+      document.body.dataset.componentsLoaded === "true"
+    ) {
       initializeAnimations();
       return;
     }
@@ -187,16 +231,22 @@
     );
   }
 
-  if (typeof motionQuery.addEventListener === "function") {
-    motionQuery.addEventListener("change", handleMotionChange);
+  if (
+    typeof reducedMotion.addEventListener === "function"
+  ) {
+    reducedMotion.addEventListener(
+      "change",
+      handleMotionChange
+    );
   } else {
-    motionQuery.addListener(handleMotionChange);
+    reducedMotion.addListener(handleMotionChange);
   }
 
+  // Public refresh method.
   window.PortfolioAnimations = {
-    refresh,
-    initialize: initializeAnimations
+    refresh: refreshAnimations
   };
 
-  start();
+  startAnimations();
+
 })();
