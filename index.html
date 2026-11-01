@@ -1,3 +1,4 @@
+
 <!--
   FILE: index.html
   PROJECT: PORTFOLIO-M V2.0
@@ -20,45 +21,63 @@
 
     <title>MAGISTO TECHY | Abhinand A.S.</title>
 
+    <!-- GOOGLE FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
+    <!-- MAIN STYLESHEET -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body data-root="./">
 
+    <!-- ACCESSIBILITY -->
     <a href="#main-content" class="skip-link">
         Skip to content
     </a>
 
+    <!-- NAVIGATION COMPONENT -->
     <div data-component="navbar"></div>
 
     <main id="main-content">
 
+        <!-- HERO COMPONENT -->
         <div data-component="hero"></div>
 
+        <!-- STATISTICS COMPONENT -->
         <div data-component="statistics"></div>
 
+        <!-- ABOUT PREVIEW -->
         <section class="section about-preview" id="about">
+
             <div class="container">
+
                 <div class="section-heading reveal">
+
                     <span class="eyebrow">ABOUT ME</span>
+
                     <h2>
                         Technology meets
                         <span class="text-gradient">creativity.</span>
                     </h2>
+
                     <p>
                         I'm Abhinand — a tech content creator and UGC creator
                         passionate about technology, digital storytelling
                         and creative experiences.
                     </p>
+
                 </div>
 
                 <div class="about-preview-content reveal">
+
                     <div class="about-preview-text">
+
                         <p>
                             Through MAGISTO TECHY, I create technology-focused
                             content that makes digital products, tools and
@@ -75,75 +94,107 @@
                             Explore My Story
                             <span aria-hidden="true">↗</span>
                         </a>
+
                     </div>
+
                 </div>
+
             </div>
+
         </section>
 
+        <!-- SKILLS COMPONENT -->
         <div data-component="skills"></div>
 
+        <!-- PROJECTS COMPONENT -->
         <div data-component="project-cards"></div>
 
+        <!-- SERVICES PREVIEW -->
         <section class="section services-preview" id="services">
+
             <div class="container">
+
                 <div class="section-heading reveal">
+
                     <span class="eyebrow">WHAT I DO</span>
+
                     <h2>
                         Creative work.
                         <span class="text-gradient">Real impact.</span>
                     </h2>
+
                     <p>
                         From technology content to brand-focused creative
                         production, I work across digital platforms.
                     </p>
+
                 </div>
 
                 <div class="services-preview-grid">
 
                     <article class="service-card reveal">
+
                         <span class="service-number">01</span>
+
                         <h3>Tech Content Creation</h3>
+
                         <p>
                             Technology explainers, gadget content,
                             app discoveries and digital storytelling.
                         </p>
+
                     </article>
 
                     <article class="service-card reveal">
+
                         <span class="service-number">02</span>
+
                         <h3>UGC Creation</h3>
+
                         <p>
                             Product-focused content designed to present
                             brands and products in an engaging way.
                         </p>
+
                     </article>
 
                     <article class="service-card reveal">
+
                         <span class="service-number">03</span>
+
                         <h3>Video Editing</h3>
+
                         <p>
                             Short-form video editing and creative
                             visual production for digital platforms.
                         </p>
+
                     </article>
 
                 </div>
 
                 <div class="section-action reveal">
+
                     <a href="pages/services.html" class="btn btn-outline">
                         Explore Services
                         <span aria-hidden="true">↗</span>
                     </a>
+
                 </div>
+
             </div>
+
         </section>
 
+        <!-- CONTACT COMPONENT -->
         <div data-component="contact-section"></div>
 
     </main>
 
+    <!-- FOOTER COMPONENT -->
     <div data-component="footer"></div>
 
+    <!-- BACK TO TOP -->
     <button
         class="back-to-top"
         type="button"
@@ -153,11 +204,15 @@
         ↑
     </button>
 
+    <!--
+      SINGLE ENTRY POINT:
+      component-loader.js loads the HTML components first,
+      then loads navigation, animations, interactions and main
+      scripts sequentially.
+
+      Do not add those four scripts separately here.
+    -->
     <script src="js/component-loader.js" defer></script>
-    <script src="js/navigation.js" defer></script>
-    <script src="js/animations.js" defer></script>
-    <script src="js/interactions.js" defer></script>
-    <script src="js/main.js" defer></script>
 
 </body>
 </html>
