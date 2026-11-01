@@ -1,11 +1,4 @@
 
-<!--
-  FILE: about.html
-  PROJECT: PORTFOLIO-M V2.0
-  BRAND: MAGISTO TECHY
-  LOCATION: Portfolio-M/pages/about.html
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,34 +7,30 @@
 
     <meta name="author" content="Abhinand A.S.">
     <meta name="description" content="Learn more about Abhinand A.S., the creator behind MAGISTO TECHY.">
-
     <meta name="theme-color" content="#080A0B">
 
     <title>About Me | MAGISTO TECHY</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body data-root="../">
 
-    <!-- Accessibility -->
     <a href="#main-content" class="skip-link">
         Skip to content
     </a>
 
-    <!-- Navigation Component -->
+    <!-- Shared Navigation -->
     <div data-component="navbar"></div>
 
     <main id="main-content">
 
-        <!-- Page Hero -->
+        <!-- ABOUT HERO -->
         <section class="page-hero section">
             <div class="container">
 
@@ -63,7 +52,7 @@
             </div>
         </section>
 
-        <!-- About Profile -->
+        <!-- PROFILE -->
         <section class="section about-profile">
             <div class="container">
 
@@ -71,9 +60,10 @@
 
                     <div class="about-profile-image reveal-left">
                         <img
-                            src="../assets/images/portrait.png"
+                            src="../assets/images/assets/images/portrait.png"
                             alt="Portrait of Abhinand A.S."
                             loading="lazy"
+                            decoding="async"
                         >
                     </div>
 
@@ -93,18 +83,20 @@
                         </p>
 
                         <p>
-                            I enjoy exploring new technology, experimenting
-                            with creative tools and turning complex ideas
-                            into content that people can understand.
+                            I enjoy exploring new technology,
+                            experimenting with creative tools and
+                            turning complex ideas into content
+                            that people can understand.
                         </p>
 
                         <p>
-                            My work also extends into user-generated content,
-                            product-focused storytelling and collaborations
-                            with brands.
+                            My work also extends into user-generated
+                            content, product-focused storytelling
+                            and collaborations with brands.
                         </p>
 
                         <div class="about-profile-actions">
+
                             <a href="projects.html" class="btn btn-primary">
                                 Explore My Work
                                 <span aria-hidden="true">↗</span>
@@ -113,6 +105,7 @@
                             <a href="contact.html" class="btn btn-outline">
                                 Contact Me
                             </a>
+
                         </div>
 
                     </div>
@@ -122,7 +115,7 @@
             </div>
         </section>
 
-        <!-- Personal Journey -->
+        <!-- MY JOURNEY -->
         <section class="section journey-section">
             <div class="container">
 
@@ -145,7 +138,9 @@
 
                     <article class="journey-card reveal">
                         <span class="journey-number">01</span>
+
                         <h3>Discover</h3>
+
                         <p>
                             Exploring technology, digital platforms
                             and emerging creative possibilities.
@@ -154,7 +149,9 @@
 
                     <article class="journey-card reveal">
                         <span class="journey-number">02</span>
+
                         <h3>Create</h3>
+
                         <p>
                             Turning ideas into informative content,
                             visual stories and product-focused videos.
@@ -163,7 +160,9 @@
 
                     <article class="journey-card reveal">
                         <span class="journey-number">03</span>
+
                         <h3>Connect</h3>
+
                         <p>
                             Building relationships with audiences,
                             creators and brands through digital content.
@@ -175,19 +174,22 @@
             </div>
         </section>
 
-        <!-- Skills Component -->
+        <!-- SHARED SKILLS COMPONENT -->
         <div data-component="skills"></div>
 
-        <!-- Closing CTA -->
+        <!-- CONTACT CTA -->
         <section class="section about-cta">
             <div class="container">
 
                 <div class="cta-card reveal">
+
                     <span class="eyebrow">LET'S CONNECT</span>
 
                     <h2>
                         Have an idea?
-                        <span class="text-gradient">Let's create something.</span>
+                        <span class="text-gradient">
+                            Let's create something.
+                        </span>
                     </h2>
 
                     <p>
@@ -199,6 +201,7 @@
                         Get In Touch
                         <span aria-hidden="true">↗</span>
                     </a>
+
                 </div>
 
             </div>
@@ -206,7 +209,7 @@
 
     </main>
 
-    <!-- Footer Component -->
+    <!-- Shared Footer -->
     <div data-component="footer"></div>
 
     <!-- Back To Top -->
@@ -219,20 +222,8 @@
         ↑
     </button>
 
-    <!-- JavaScript: Component Loader -->
+    <!-- Load components and shared scripts once -->
     <script src="../js/component-loader.js" defer></script>
-
-    <!-- JavaScript: Navigation -->
-    <script src="../js/navigation.js" defer></script>
-
-    <!-- JavaScript: Animations -->
-    <script src="../js/animations.js" defer></script>
-
-    <!-- JavaScript: Interactions -->
-    <script src="../js/interactions.js" defer></script>
-
-    <!-- JavaScript: Main Initialization -->
-    <script src="../js/main.js" defer></script>
 
 </body>
 </html>
