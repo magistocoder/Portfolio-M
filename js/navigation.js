@@ -1,147 +1,70 @@
 
 /* =========================================================
    FILE: js/navigation.js
-   PROJECT: PORTFOLIO-M V2.0
-   PURPOSE: Responsive navigation and mobile menu
+   PROJECT: PORTFOLIO-M
+   PURPOSE: Responsive and accessible navigation
    BRAND: MAGISTO TECHY
    ========================================================= */
 
 (() => {
   "use strict";
 
-  // -------------------------------------------------------
-  // CONFIGURATION
-  // -------------------------------------------------------
-
-  const CONFIG = {
-    breakpoint: 900,
-    navbarSelector: ".navbar",
-    toggleSelector: ".navbar-toggle",
-    linksSelector: ".navbar-links",
-    initializedAttribute: "data-navigation-ready"
-  };
-
-  let mediaQuery = null;
-
-  // -------------------------------------------------------
-  // INITIALIZATION GUARD
-  // -------------------------------------------------------
+  const BREAKPOINT = 900;
 
   function initializeNavigation() {
-    const navbar = document.querySelector(
-      CONFIG.navbarSelector
-    );
+    const navbar = document.querySelector(".navbar");
 
-    if (!navbar) {
-      console.warn("[Navigation] Navbar not found.");
+    if (!navbar || navbar.dataset.navigationReady === "true") {
       return;
     }
 
-    if (
-      navbar.getAttribute(CONFIG.initializedAttribute) === "true"
-    ) {
+    const toggle = navbar.querySelector(".menu-toggle");
+    const menu = navbar.querySelector(".nav-menu");
+
+    if (!toggle || !menu) {
+      console.error("[Navigation] Menu elements not found.");
       return;
     }
 
-    const toggle = navbar.querySelector(
-      CONFIG.toggleSelector
-    );
-
-    const links = navbar.querySelector(
-      CONFIG.linksSelector
-    );
-
-    if (!toggle || !links) {
-      console.warn(
-        "[Navigation] Toggle or navigation links missing."
-      );
-      return;
-    }
-
-    // -----------------------------------------------------
-    // ACCESSIBILITY SETUP
-    // -----------------------------------------------------
-
-    if (!links.id) {
-      links.id = "primary-navigation";
+    if (!menu.id) {
+      menu.id = "primary-navigation";
     }
 
     toggle.type = "button";
-
-    toggle.setAttribute("aria-controls", links.id);
+    toggle.setAttribute("aria-controls", menu.id);
     toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute(
-      "aria-label",
-      "Open navigation menu"
-    );
-
-    // -----------------------------------------------------
-    // MENU FUNCTIONS
-    // -----------------------------------------------------
+    toggle.setAttribute("aria-label", "Open navigation menu");
 
     function closeMenu() {
       navbar.classList.remove("is-open");
-      links.classList.remove("is-open");
-
+      menu.classList.remove("is-open");
       toggle.setAttribute("aria-expanded", "false");
-
-      toggle.setAttribute(
-        "aria-label",
-        "Open navigation menu"
-      );
+      toggle.setAttribute("aria-label", "Open navigation menu");
     }
 
     function openMenu() {
       navbar.classList.add("is-open");
-      links.classList.add("is-open");
-
+      menu.classList.add("is-open");
       toggle.setAttribute("aria-expanded", "true");
-
-      toggle.setAttribute(
-        "aria-label",
-        "Close navigation menu"
-      );
+      toggle.setAttribute("aria-label", "Close navigation menu");
     }
-
-    function toggleMenu() {
-      const isOpen =
-        toggle.getAttribute("aria-expanded") === "true";
-
-      if (isOpen) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    }
-
-    // -----------------------------------------------------
-    // MOBILE MENU TOGGLE
-    // -----------------------------------------------------
 
     toggle.addEventListener("click", (event) => {
       event.stopPropagation();
-      toggleMenu();
+
+      const isOpen =
+        toggle.getAttribute("aria-expanded") === "true";
+
+      isOpen ? closeMenu() : openMenu();
     });
 
-    // -----------------------------------------------------
-    // NAVIGATION LINK HANDLING
-    // -----------------------------------------------------
+    menu.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
 
-    links.addEventListener("click", (event) => {
-      const target = event.target;
-
-      if (!(target instanceof Element)) return;
-
-      const link = target.closest("a");
-
-      if (!link || !links.contains(link)) return;
-
-      closeMenu();
+      if (event.target.closest("a")) {
+        closeMenu();
+      }
     });
-
-    // -----------------------------------------------------
-    // CLICK OUTSIDE TO CLOSE
-    // -----------------------------------------------------
 
     document.addEventListener("click", (event) => {
       if (!navbar.contains(event.target)) {
@@ -149,73 +72,33 @@
       }
     });
 
-    // -----------------------------------------------------
-    // ESCAPE KEY SUPPORT
-    // -----------------------------------------------------
-
     document.addEventListener("keydown", (event) => {
-      const isOpen =
-        toggle.getAttribute("aria-expanded") === "true";
-
-      if (event.key === "Escape" && isOpen) {
+      if (
+        event.key === "Escape" &&
+        toggle.getAttribute("aria-expanded") === "true"
+      ) {
         closeMenu();
         toggle.focus();
       }
     });
 
-    // -----------------------------------------------------
-    // RESPONSIVE BREAKPOINT
-    // -----------------------------------------------------
-
-    mediaQuery = window.matchMedia(
-      `(min-width: ${CONFIG.breakpoint}px)`
+    const desktopQuery = window.matchMedia(
+      `(min-width: ${BREAKPOINT}px)`
     );
 
-    function handleBreakpointChange(event) {
-      if (event.matches) {
-        closeMenu();
-      }
-    }
-
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener(
-        "change",
-        handleBreakpointChange
-      );
-    } else {
-      mediaQuery.addListener(handleBreakpointChange);
-    }
-
-    // -----------------------------------------------------
-    // BROWSER NAVIGATION RESET
-    // -----------------------------------------------------
-
-    window.addEventListener("pageshow", () => {
-      closeMenu();
+    desktopQuery.addEventListener?.("change", (event) => {
+      if (event.matches) closeMenu();
     });
 
-    // -----------------------------------------------------
-    // MARK INITIALIZATION COMPLETE
-    // -----------------------------------------------------
+    window.addEventListener("pageshow", closeMenu);
 
-    navbar.setAttribute(
-      CONFIG.initializedAttribute,
-      "true"
-    );
+    navbar.dataset.navigationReady = "true";
 
-    console.info(
-      "[Navigation] Successfully initialized."
-    );
+    console.info("[Navigation] Initialized successfully.");
   }
 
-  // -------------------------------------------------------
-  // WAIT FOR COMPONENT LOADER
-  // -------------------------------------------------------
-
   function startNavigation() {
-    if (
-      document.body.dataset.componentsLoaded === "true"
-    ) {
+    if (document.body.dataset.componentsLoaded === "true") {
       initializeNavigation();
       return;
     }
@@ -228,5 +111,4 @@
   }
 
   startNavigation();
-
 })();
