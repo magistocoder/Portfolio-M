@@ -1,94 +1,263 @@
 
 /* =========================================================
-   PORTFOLIO-M — RESPONSIVE REPAIR
-   Version: 4.0
-   Purpose:
-   - Fix mobile width and horizontal overflow
-   - Repair navigation on phones and tablets
-   - Fix hero and statistics layout
-   - Fix skills, services and Reel cards
-   - Repair footer columns
-   - Preserve desktop design
+   PORTFOLIO-M — MASTER STYLESHEET
+   Version: 5.0
+   Responsive design: Mobile / Tablet / Desktop
    ========================================================= */
 
+/* 01. DESIGN TOKENS
+========================================================= */
 
-/* ---------------------------------------------------------
-   1. GLOBAL RESPONSIVE FOUNDATION
-   --------------------------------------------------------- */
+:root {
+    --bg: #080a0b;
+    --bg-soft: #0e1112;
+    --surface: #121617;
+    --surface-light: #191f20;
 
-*,
-*::before,
-*::after {
+    --accent: #b8ff38;
+    --accent-soft: rgba(184, 255, 56, 0.12);
+
+    --text: #f4f7f1;
+    --text-muted: #a2aaa2;
+    --border: rgba(255, 255, 255, 0.09);
+
+    --font-heading: "Space Grotesk", sans-serif;
+    --font-body: "DM Sans", sans-serif;
+
+    --container: 1180px;
+
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 28px;
+
+    --transition: 0.3s ease;
+}
+
+
+/* 02. RESET & BASE
+========================================================= */
+
+* {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: clip;
     scroll-behavior: smooth;
+    scroll-padding-top: 90px;
 }
 
 body {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    margin: 0;
-    overflow-x: clip;
+    min-width: 320px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
 }
 
-main,
-section,
-header,
-footer,
-nav,
-.container,
-.container-wide,
-.container-narrow {
-    min-width: 0;
-    max-width: 100%;
-}
-
-.container {
-    width: min(100% - 48px, 1200px);
-    margin-inline: auto;
-}
-
-.container-wide {
-    width: min(100% - 48px, 1440px);
-    margin-inline: auto;
-}
-
-.container-narrow {
-    width: min(100% - 48px, 850px);
-    margin-inline: auto;
+body,
+button,
+input,
+textarea {
+    font-family: var(--font-body);
 }
 
 img,
 video,
-iframe,
-svg {
+iframe {
+    max-width: 100%;
+}
+
+img {
     display: block;
-    max-width: 100%;
+    height: auto;
 }
 
-input,
-textarea,
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
 button,
-select {
-    max-width: 100%;
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+    background: var(--accent);
+    color: #080a0b;
 }
 
 
-/* ---------------------------------------------------------
-   2. NAVIGATION — DESKTOP
-   --------------------------------------------------------- */
+/* 03. GLOBAL LAYOUT
+========================================================= */
+
+.container {
+    width: min(
+        var(--container),
+        calc(100% - 48px)
+    );
+    margin-inline: auto;
+}
+
+.section {
+    padding-block: 100px;
+}
+
+.section-padding {
+    padding-block: 100px;
+}
+
+.text-accent,
+.section-heading h2 span,
+.page-hero h1 span,
+.hero-content h1 span,
+.cta-card h2 span {
+    color: var(--accent);
+}
+
+.section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+}
+
+.section-eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 2px;
+    background: var(--accent);
+}
+
+.section-heading {
+    max-width: 700px;
+    margin-bottom: 48px;
+}
+
+.section-heading h2 {
+    font-family: var(--font-heading);
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -1.8px;
+}
+
+.section-heading > p:not(.section-eyebrow) {
+    max-width: 580px;
+    margin-top: 16px;
+    color: var(--text-muted);
+}
+
+
+/* 04. ACCESSIBILITY
+========================================================= */
+
+.skip-link {
+    position: fixed;
+    top: -100px;
+    left: 20px;
+    z-index: 9999;
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #080a0b;
+    font-weight: 700;
+}
+
+.skip-link:focus {
+    top: 20px;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+}
+
+
+/* 05. BUTTONS
+========================================================= */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 12px 22px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    transition:
+        background var(--transition),
+        color var(--transition),
+        border-color var(--transition),
+        transform var(--transition);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #080a0b;
+}
+
+.btn-primary:hover {
+    background: #d0ff83;
+}
+
+.btn-secondary {
+    border-color: var(--border);
+    background: rgba(255, 255, 255, 0.035);
+    color: var(--text);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.hero-actions,
+.cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 30px;
+}
+
+
+/* 06. NAVIGATION
+========================================================= */
 
 .site-header {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 1000;
     width: 100%;
-    max-width: 100%;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8, 10, 11, 0.88);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 
 .navbar {
@@ -96,630 +265,860 @@ select {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    min-height: 78px;
     gap: 24px;
-    width: min(100% - 48px, 1200px);
-    min-width: 0;
-    margin-inline: auto;
 }
 
-.navbar-brand {
+.navbar-brand,
+.footer-logo {
     display: inline-flex;
     align-items: center;
+    gap: 11px;
     flex-shrink: 0;
-    min-width: 0;
+}
+
+.brand-mark {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #080a0b;
+    font-family: var(--font-heading);
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.brand-name {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .nav-menu {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: clamp(14px, 2vw, 30px);
-    min-width: 0;
+    gap: clamp(12px, 2vw, 25px);
+}
+
+.nav-menu a {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: color var(--transition);
+}
+
+.nav-menu a:hover,
+.nav-menu a.active,
+.nav-menu a[aria-current="page"] {
+    color: var(--accent);
 }
 
 .menu-toggle {
     display: none;
-    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    cursor: pointer;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    margin: 4px auto;
+    border-radius: 4px;
+    background: var(--text);
+    transition: var(--transition);
+}
+
+
+/* 07. HERO
+========================================================= */
+
+.hero-section {
+    display: flex;
+    align-items: center;
+    min-height: 680px;
+    padding-block: 90px;
+    background:
+        radial-gradient(
+            circle at 80% 45%,
+            rgba(184, 255, 56, 0.075),
+            transparent 35%
+        );
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+    gap: 70px;
+}
+
+.hero-content h1,
+.page-hero h1 {
+    max-width: 760px;
+    font-family: var(--font-heading);
+    font-size: clamp(42px, 6vw, 76px);
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: -3px;
+}
+
+.hero-description,
+.hero-content > p:not(.section-eyebrow) {
+    max-width: 570px;
+    margin-top: 24px;
+    color: var(--text-muted);
+    font-size: 17px;
+}
+
+.hero-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.hero-meta-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+.hero-visual {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    margin-inline: auto;
+}
+
+.hero-image-frame {
+    position: relative;
+    display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 480px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 32px;
+    background:
+        linear-gradient(
+            145deg,
+            #1c2520,
+            #0c100e 70%
+        );
+}
+
+.hero-image-frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.portrait-fallback {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 480px;
+    color: var(--accent);
+    font-family: var(--font-heading);
+}
+
+.portrait-fallback span {
+    font-size: 110px;
+    font-weight: 700;
+}
+
+.portrait-fallback p {
+    font-size: 12px;
+    letter-spacing: 3px;
+}
+
+.hero-floating-card {
+    position: absolute;
+    right: -22px;
+    bottom: 35px;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 22px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(18, 22, 23, 0.95);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+}
+
+.hero-floating-card strong {
+    color: var(--accent);
+    font-family: var(--font-heading);
+    font-size: 26px;
+}
+
+.hero-floating-card small {
+    color: var(--text-muted);
+    font-size: 11px;
 }
 
 
-/* ---------------------------------------------------------
-   3. TABLET AND SMALL LAPTOP
-   --------------------------------------------------------- */
+/* 08. PAGE INTRO
+========================================================= */
 
-@media (max-width: 1100px) {
+.page-hero {
+    padding-block: 105px 70px;
+    background:
+        radial-gradient(
+            circle at 75% 30%,
+            rgba(184, 255, 56, 0.06),
+            transparent 40%
+        );
+}
 
-    .container,
-    .container-wide,
-    .container-narrow {
-        width: calc(100% - 40px);
-    }
+.page-hero h1 {
+    font-size: clamp(42px, 6vw, 68px);
+}
 
-    /* Navigation becomes a mobile menu */
+.page-hero > .container > p:not(.section-eyebrow) {
+    max-width: 680px;
+    margin-top: 22px;
+    color: var(--text-muted);
+    font-size: 17px;
+}
 
-    .navbar {
-        min-height: 72px;
-        gap: 12px;
-    }
-
-    .menu-toggle {
-        display: flex;
-        position: relative;
-        z-index: 1002;
-    }
-
-    .nav-menu {
-        position: absolute;
-        top: calc(100% + 10px);
-        left: 0;
-        right: 0;
-
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 4px;
-
-        width: 100%;
-        padding: 14px;
-
-        border: 1px solid var(--color-border, rgba(255,255,255,.1));
-        border-radius: 18px;
-
-        background: rgba(10, 12, 11, .97);
-
-        -webkit-backdrop-filter: blur(20px);
-        backdrop-filter: blur(20px);
-
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-
-        transform: translateY(-8px);
-
-        transition:
-            opacity .25s ease,
-            visibility .25s ease,
-            transform .25s ease;
-    }
-
-    .nav-menu.is-open,
-    .nav-menu.active,
-    .nav-menu.open {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transform: translateY(0);
-    }
-
-    .nav-menu .nav-link,
-    .nav-menu .nav-contact {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        width: 100%;
-        min-width: 0;
-        padding: 14px;
-    }
-
-    .nav-menu .nav-contact {
-        justify-content: center;
-        margin-top: 8px;
-    }
-
-    /* Hero */
-
-    .hero-section {
-        min-height: auto;
-        padding-block: 70px 55px;
-    }
-
-    .hero-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 38px;
-        width: 100%;
-    }
-
-    .hero-content {
-        width: 100%;
-        max-width: 760px;
-        min-width: 0;
-    }
-
-    .hero-content h1,
-    .hero-title {
-        max-width: 100%;
-        overflow-wrap: break-word;
-    }
-
-    .hero-visual {
-        width: min(100%, 440px);
-        min-width: 0;
-        margin-inline: auto;
-    }
-
-    .hero-image-frame {
-        width: 100%;
-    }
-
-    .hero-floating-card {
-        max-width: calc(100% - 24px);
-    }
-
-    /* About and split sections */
-
-    .about-profile-grid,
-    .two-column,
-    .split-layout,
-    .content-row {
-        grid-template-columns: minmax(0, 1fr);
-        width: 100%;
-    }
-
-    /* Statistics */
-
-    .statistics-grid,
-    .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-        width: 100%;
-    }
-
-    /* Skills and services */
-
-    .skills-grid,
-    .services-preview-grid,
-    .services-grid,
-    .journey-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
-        width: 100%;
-    }
-
-    /* Reel and project cards */
-
-    .reels-grid,
-    .projects-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-        width: 100%;
-    }
-
-    .reel-card,
-    .project-card,
-    .skill-card,
-    .service-card {
-        min-width: 0;
-        max-width: 100%;
-    }
-
-    /* Footer */
-
-    .footer-main {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 28px 22px;
-        width: 100%;
-    }
-
-    .footer-main > * {
-        min-width: 0;
-    }
+.page-hero .btn {
+    margin-top: 28px;
 }
 
 
-/* ---------------------------------------------------------
-   4. MOBILE — 640px AND BELOW
-   --------------------------------------------------------- */
+/* 09. STATISTICS
+========================================================= */
 
-@media (max-width: 640px) {
+.statistics-section {
+    padding-block: 35px 80px;
+}
 
-    html {
-        font-size: 15px;
-    }
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
 
-    body {
-        width: 100%;
-        max-width: 100%;
-    }
+.stat-card {
+    min-width: 0;
+    padding: 28px 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
 
-    .container,
-    .container-wide,
-    .container-narrow {
-        width: calc(100% - 40px);
-        max-width: none;
-        margin-inline: auto;
-    }
+.stat-number {
+    display: block;
+    color: var(--accent);
+    font-family: var(--font-heading);
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 700;
+    line-height: 1.2;
+}
 
-    /* Section spacing */
+.stat-label {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 700;
+}
 
-    .section,
-    .section-padding {
-        padding-block: 64px;
-    }
-
-    .section-heading {
-        width: 100%;
-        max-width: 100%;
-        margin-bottom: 30px;
-    }
-
-    .section-heading h2 {
-        font-size: clamp(1.8rem, 7vw, 2.5rem);
-        line-height: 1.15;
-        overflow-wrap: break-word;
-    }
-
-    .section-description {
-        max-width: 100%;
-        font-size: .98rem;
-        line-height: 1.75;
-    }
-
-    /* Navigation */
-
-    .navbar {
-        width: calc(100% - 32px);
-        min-height: 68px;
-    }
-
-    .navbar-brand {
-        max-width: calc(100% - 60px);
-    }
-
-    .brand-name {
-        font-size: .9rem;
-        white-space: nowrap;
-    }
-
-    .menu-toggle {
-        width: 44px;
-        height: 44px;
-    }
-
-    /* Hero */
-
-    .hero-section {
-        padding-block: 54px 42px;
-    }
-
-    .hero-grid {
-        gap: 32px;
-    }
-
-    .hero-content {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .hero-content h1,
-    .hero-title {
-        font-size: clamp(2.55rem, 10.5vw, 4rem);
-        line-height: 1.06;
-        letter-spacing: -.045em;
-    }
-
-    .hero-description {
-        font-size: 1rem;
-        line-height: 1.75;
-    }
-
-    .hero-actions {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-        width: 100%;
-    }
-
-    .hero-actions .btn,
-    .hero-actions a {
-        width: fit-content;
-        max-width: 100%;
-    }
-
-    .hero-visual {
-        width: 100%;
-        max-width: 360px;
-    }
-
-    .hero-floating-card {
-        right: 8px;
-        bottom: 12px;
-        padding: 12px;
-    }
-
-    /* Statistics */
-
-    .statistics-grid,
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-        width: 100%;
-    }
-
-    .stat-card {
-        min-width: 0;
-        padding: 20px 14px;
-        overflow-wrap: anywhere;
-    }
-
-    .stat-number {
-        font-size: clamp(1.5rem, 6vw, 2rem);
-    }
-
-    /* Skills */
-
-    .skills-grid,
-    .services-preview-grid,
-    .services-grid,
-    .journey-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-        width: 100%;
-    }
-
-    .skill-card,
-    .service-card {
-        min-width: 0;
-        padding: 18px 14px;
-        overflow: hidden;
-    }
-
-    .skill-card h3,
-    .service-card h3 {
-        font-size: 1rem;
-        line-height: 1.35;
-        overflow-wrap: anywhere;
-    }
-
-    .skill-card p,
-    .service-card p {
-        font-size: .9rem;
-        line-height: 1.65;
-        overflow-wrap: anywhere;
-    }
-
-    .skill-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-    }
-
-    .skill-tags span {
-        max-width: 100%;
-        overflow-wrap: anywhere;
-    }
-
-    /* Reel cards */
-
-    .reels-grid,
-    .projects-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-        width: 100%;
-    }
-
-    .reel-card,
-    .project-card {
-        min-width: 0;
-        width: 100%;
-        overflow: hidden;
-    }
-
-    .reel-embed {
-        width: 100%;
-        overflow: hidden;
-        border-radius: 14px;
-    }
-
-    .reel-embed iframe {
-        display: block;
-        width: 100%;
-        max-width: 100%;
-        aspect-ratio: 9 / 16;
-        border: 0;
-    }
-
-    .reel-info,
-    .project-info {
-        min-width: 0;
-        padding: 14px;
-    }
-
-    .reel-info h3,
-    .project-info h3 {
-        font-size: 1rem;
-        overflow-wrap: anywhere;
-    }
-
-    .reel-info p,
-    .project-info p {
-        font-size: .88rem;
-        line-height: 1.6;
-        overflow-wrap: anywhere;
-    }
-
-    /* Project heading */
-
-    .projects-heading {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-
-    /* Contact */
-
-    .contact-card,
-    .contact-section .container {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .contact-card {
-        padding: 26px 20px;
-    }
-
-    /* Footer */
-
-    .footer-main {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 26px 16px;
-        width: 100%;
-    }
-
-    .footer-brand {
-        grid-column: 1 / -1;
-    }
-
-    .footer-main > * {
-        min-width: 0;
-        overflow-wrap: anywhere;
-    }
-
-    .footer-bottom {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .footer-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px 18px;
-    }
-
-    /* Images and embeds */
-
-    img,
-    video,
-    iframe {
-        max-width: 100%;
-    }
+.stat-card p {
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 12px;
 }
 
 
-/* ---------------------------------------------------------
-   5. VERY SMALL PHONES — 380px AND BELOW
-   --------------------------------------------------------- */
+/* 10. SKILLS
+========================================================= */
 
-@media (max-width: 380px) {
+.skills-section {
+    background: var(--bg-soft);
+}
 
-    .container,
-    .container-wide,
-    .container-narrow {
-        width: calc(100% - 28px);
-    }
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
 
-    .hero-content h1,
-    .hero-title {
-        font-size: clamp(2.3rem, 10vw, 2.8rem);
-    }
+.skill-card {
+    min-width: 0;
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    transition:
+        transform var(--transition),
+        border-color var(--transition);
+}
 
-    .statistics-grid,
-    .stats-grid {
-        gap: 9px;
-    }
+.skill-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(184, 255, 56, 0.4);
+}
 
-    .stat-card {
-        padding: 16px 10px;
-    }
+.skill-card-top,
+.service-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
 
-    .skills-grid,
-    .services-preview-grid,
-    .services-grid,
-    .journey-grid,
-    .reels-grid,
-    .projects-grid {
-        gap: 9px;
-    }
+.skill-icon,
+.service-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 13px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 20px;
+}
 
-    .skill-card,
-    .service-card {
-        padding: 15px 11px;
-    }
+.skill-index,
+.service-number {
+    color: #69716a;
+    font-size: 12px;
+    font-weight: 700;
+}
 
-    .reel-info,
-    .project-info {
-        padding: 11px;
-    }
+.skill-card h3,
+.service-card h3,
+.workflow-card h3 {
+    font-family: var(--font-heading);
+    font-size: 21px;
+    line-height: 1.3;
+}
 
-    .footer-main {
-        gap: 22px 12px;
-    }
+.skill-card > p,
+.service-card > p,
+.workflow-card > p {
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+}
+
+.skill-tags span {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 11px;
 }
 
 
-/* ---------------------------------------------------------
-   6. WIDE DESKTOP
-   --------------------------------------------------------- */
+/* 11. PROJECTS AND REELS
+========================================================= */
 
-@media (min-width: 1101px) {
+.projects-section {
+    background: var(--bg);
+}
 
-    .container {
-        width: min(100% - 64px, 1200px);
-    }
+.reels-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
 
-    .hero-grid {
-        min-width: 0;
-    }
+.reel-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    transition:
+        transform var(--transition),
+        border-color var(--transition);
+}
 
-    .nav-menu {
-        visibility: visible;
-        opacity: 1;
-        pointer-events: auto;
-    }
+.reel-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(184, 255, 56, 0.4);
+}
 
-    .menu-toggle {
-        display: none;
-    }
+.reel-embed {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 12;
+    overflow: hidden;
+    background: #111;
+}
+
+.reel-embed iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.reel-info {
+    padding: 20px;
+}
+
+.reel-category {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+}
+
+.reel-info h3 {
+    margin-top: 8px;
+    font-family: var(--font-heading);
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.reel-link {
+    display: inline-block;
+    margin-top: 15px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.reel-link:hover {
+    text-decoration: underline;
+}
+
+.projects-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 42px;
 }
 
 
-/* ---------------------------------------------------------
-   7. TOUCH DEVICES
-   --------------------------------------------------------- */
+/* 12. SERVICES
+========================================================= */
 
-@media (hover: none) {
+.services-section {
+    background: var(--bg-soft);
+}
 
-    .project-card:hover,
-    .skill-card:hover,
-    .service-card:hover,
-    .reel-card:hover {
-        transform: none;
-    }
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
 
-    .btn:hover,
-    .hover-lift:hover,
-    .hover-scale:hover {
-        transform: none;
-    }
+.service-card {
+    min-width: 0;
+    padding: 30px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    transition:
+        transform var(--transition),
+        border-color var(--transition);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(184, 255, 56, 0.4);
+}
+
+.service-card ul {
+    display: grid;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.service-card li {
+    position: relative;
+    padding-left: 19px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.service-card li::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--accent);
+    content: "✓";
+    font-weight: 700;
+}
+
+.service-card .btn {
+    margin-top: 24px;
 }
 
 
-/* ---------------------------------------------------------
-   8. ACCESSIBILITY
-   --------------------------------------------------------- */
+/* 13. WORKFLOW
+========================================================= */
+
+.workflow-section {
+    background: var(--bg-soft);
+}
+
+.workflow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.workflow-card {
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.workflow-number {
+    display: block;
+    margin-bottom: 22px;
+    color: var(--accent);
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 700;
+}
+
+
+/* 14. CONTACT CTA
+========================================================= */
+
+.contact-cta-section {
+    background: var(--bg-soft);
+}
+
+.cta-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    min-height: 300px;
+    padding: 55px;
+    overflow: hidden;
+    border: 1px solid rgba(184, 255, 56, 0.2);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(
+            circle at 90% 50%,
+            rgba(184, 255, 56, 0.1),
+            transparent 35%
+        ),
+        var(--surface);
+}
+
+.cta-card h2 {
+    max-width: 680px;
+    font-family: var(--font-heading);
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.12;
+    letter-spacing: -1.5px;
+}
+
+.cta-card p:not(.section-eyebrow) {
+    max-width: 590px;
+    margin-top: 18px;
+    color: var(--text-muted);
+}
+
+.contact-cta-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+}
+
+.contact-cta-decoration {
+    position: relative;
+    flex: 0 0 180px;
+    width: 180px;
+    height: 180px;
+}
+
+.cta-orbit {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(184, 255, 56, 0.45);
+    border-radius: 50%;
+}
+
+.cta-orbit-one {
+    transform: rotate(35deg) scaleY(0.65);
+}
+
+.cta-orbit-two {
+    transform: rotate(-35deg) scaleY(0.65);
+}
+
+.cta-center-mark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    width: 65px;
+    height: 65px;
+    margin: auto;
+    place-items: center;
+    border-radius: 20px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--font-heading);
+    font-size: 35px;
+    font-weight: 700;
+}
+
+
+/* 15. ABOUT PAGE SUPPORT
+========================================================= */
+
+.two-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 50px;
+}
+
+.about-profile-image img {
+    width: 100%;
+    max-height: 520px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+}
+
+.about-profile-content p {
+    margin-top: 15px;
+    color: var(--text-muted);
+}
+
+.journey-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.journey-card {
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.journey-card p {
+    margin-top: 12px;
+    color: var(--text-muted);
+}
+
+
+/* 16. FOOTER
+========================================================= */
+
+.site-footer {
+    padding-top: 75px;
+    background: #060808;
+    border-top: 1px solid var(--border);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr 1fr;
+    gap: 55px;
+    padding-bottom: 55px;
+}
+
+.footer-brand > p {
+    max-width: 360px;
+    margin-top: 22px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.footer-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 22px;
+}
+
+.footer-socials a {
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.footer-column h3 {
+    margin-bottom: 20px;
+    font-family: var(--font-heading);
+    font-size: 16px;
+}
+
+.footer-column ul {
+    display: grid;
+    gap: 12px;
+}
+
+.footer-column a {
+    color: var(--text-muted);
+    font-size: 13px;
+    transition: color var(--transition);
+}
+
+.footer-column a:hover {
+    color: var(--accent);
+}
+
+.footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 75px;
+    border-top: 1px solid var(--border);
+}
+
+.footer-bottom p,
+.footer-bottom a {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.footer-bottom a:hover {
+    color: var(--accent);
+}
+
+
+/* 17. BACK TO TOP
+========================================================= */
+
+.back-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 900;
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border: 1px solid rgba(184, 255, 56, 0.3);
+    border-radius: 50%;
+    background: var(--accent);
+    color: #080a0b;
+    font-size: 22px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: var(--transition);
+}
+
+.back-to-top.visible,
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+/* 18. ANIMATIONS
+========================================================= */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(25px);
+    transition:
+        opacity 0.65s ease,
+        transform 0.65s ease;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 
 @media (prefers-reduced-motion: reduce) {
-
-    html {
-        scroll-behavior: auto;
-    }
-
     *,
     *::before,
     *::after {
-        animation-duration: .01ms !important;
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
     }
 }
+
+
+/* 19. COMPONENT ERROR
+========================================================= */
+
+.component-error {
+    padding: 24px;
+    border: 1px solid #713b3b;
+    border-radius: var(--radius-md);
+    background: #211111;
+    color: #ffb8b8;
+}
+
+.component-error p {
+    font-weight: 700;
+}
+
+.component-error small {
+    display: block;
+    margin-top: 5px;
+    opacity: 0.75;
+}
+
+
+/* 20. TABLET RESPONSIVENESS
+========================================================= */
+
+@media (max-width: 1024px) {
+
+    .container {
+        width: min(
+            100% - 40px,
+            var(--container)
+        );
+    }
+
+    .nav-menu {
+        gap: 13px;
+    }
+
+    .nav-menu a {
+        font-size: 12px;
+    }
+
+    .hero-grid {
+        gap: 35px;
+    }
+
+    .sta
