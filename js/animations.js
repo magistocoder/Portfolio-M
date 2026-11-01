@@ -1,17 +1,24 @@
 
 /* =========================================================
-   FILE: js/animations.js
-   PROJECT: PORTFOLIO-M
-   PURPOSE: Automatic scroll reveal + stagger animations
+   PORTFOLIO-M — SCROLL ANIMATION ENGINE
+   Replays reveal animations on scroll down AND scroll up.
    ========================================================= */
 
 (() => {
   "use strict";
 
-  const REVEAL_SELECTOR =
-    ".reveal, .reveal-left, .reveal-right";
+  if (window.PortfolioAnimationsInitialized) return;
+  window.PortfolioAnimationsInitialized = true;
 
-  const AUTO_REVEAL_SELECTOR = [
+  const CONFIG = {
+    selector: ".reveal, .reveal-left, .reveal-right",
+    visibleClass: "is-visible",
+    staggerDelay: 85,
+    threshold: 0.12,
+    rootMargin: "0px 0px -8% 0px"
+  };
+
+  const AUTO_REVEAL = [
     ".hero-content",
     ".hero-visual",
     ".section-heading",
@@ -21,33 +28,29 @@
     ".projects-grid > *",
     ".services-preview-grid > *",
     ".journey-grid > *",
+    ".brand-grid > *",
     ".contact-cta-card",
     ".footer-main > *"
   ].join(",");
 
-  const STAGGER_GROUP_SELECTOR = [
+  const STAGGER_GROUPS = [
     ".statistics-grid",
     ".skills-grid",
     ".projects-grid",
     ".services-preview-grid",
     ".journey-grid",
+    ".brand-grid",
     ".footer-main"
   ].join(",");
-
-  const CONFIG = {
-    staggerDelay: 90,
-    threshold: 0.08,
-    rootMargin: "0px 0px -8% 0px"
-  };
 
   let observer = null;
   let initialized = false;
 
-  const reducedMotion = window.matchMedia(
+  const motionQuery = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   );
 
-  function findElements(root, selector) {
+  function getElements(root, selector) {
     const elements = [];
 
     if (root instanceof Element && root.matches(selector)) {
@@ -62,56 +65,44 @@
   }
 
   function prepareAutomaticReveals(root = document) {
-    const targets = findElements(
-      root,
-      AUTO_REVEAL_SELECTOR
-    );
-
-    targets.forEach((element) => {
-      if (
-        !element.classList.contains("reveal") &&
-        !element.classList.contains("reveal-left") &&
-        !element.classList.contains("reveal-right")
-      ) {
-        element.classList.add("reveal");
-      }
+    getElements(root, AUTO_REVEAL).forEach((element) => {
+      element.classList.add("reveal");
     });
   }
 
-  function initializeStaggerGroups(root = document) {
-    const groups = findElements(
-      root,
-      STAGGER_GROUP_SELECTOR
-    );
-
-    groups.forEach((group) => {
+  function prepareStaggerGroups(root = document) {
+    getElements(root, STAGGER_GROUPS).forEach((group) => {
       Array.from(group.children).forEach((child, index) => {
-        child.style.transitionDelay = reducedMotion.matches
+        child.style.transitionDelay = motionQuery.matches
           ? "0ms"
-          : `${Math.min(index, 6) * CONFIG.staggerDelay}ms`;
+          : `${Math.min(index, 7) * CONFIG.staggerDelay}ms`;
       });
     });
   }
 
-  function revealImmediately(elements) {
-    elements.forEach((element) => {
-      element.classList.add("is-visible");
+  function revealAll(root = document) {
+    getElements(root, CONFIG.selector).forEach((element) => {
+      element.classList.add(CONFIG.visibleClass);
       element.style.transitionDelay = "0ms";
     });
   }
 
   function createObserver() {
-    if (!("IntersectionObserver" in window)) {
-      return null;
-    }
+    if (!("IntersectionObserver" in window)) return null;
 
     return new IntersectionObserver(
-      (entries, currentObserver) => {
+      (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+          const element = entry.target;
 
-          entry.target.classList.add("is-visible");
-          currentObserver.unobserve(entry.target);
+          if (entry.isIntersecting) {
+            // Animate into view.
+            element.classList.add(CONFIG.visibleClass);
+          } else {
+            // Reset when leaving view.
+            // This allows the animation to replay on re-entry.
+            element.classList.remove(CONFIG.visibleClass);
+          }
         });
       },
       {
@@ -122,28 +113,28 @@
   }
 
   function observeElements(root = document) {
-    const elements = findElements(
-      root,
-      REVEAL_SELECTOR
-    );
+    const elements = getElements(root, CONFIG.selector);
 
-    if (reducedMotion.matches || !observer) {
-      revealImmediately(elements);
+    if (motionQuery.matches || !observer) {
+      revealAll(root);
       return;
     }
 
     elements.forEach((element) => {
-      if (!element.classList.contains("is-visible")) {
-        observer.observe(element);
-      }
+      observer.observe(element);
     });
   }
 
   function initializeAnimations() {
-    if (initialized) return;
+    if (initialized) {
+      refresh(document);
+      return;
+    }
+
+    initialized = true;
 
     prepareAutomaticReveals();
-    initializeStaggerGroups();
+    prepareStaggerGroups();
 
     observer = createObserver();
 
@@ -151,35 +142,39 @@
 
     observeElements();
 
-    initialized = true;
-
-    console.info("[Animations] Initialized successfully.");
+    console.info("[Portfolio] Scroll animations initialized.");
   }
 
-  function refreshAnimations(root = document) {
+  function refresh(root = document) {
     if (!initialized) {
       initializeAnimations();
       return;
     }
 
     prepareAutomaticReveals(root);
-    initializeStaggerGroups(root);
+    prepareStaggerGroups(root);
     observeElements(root);
   }
 
   function handleMotionChange(event) {
-    if (!event.matches) return;
-
-    if (observer) {
-      observer.disconnect();
+    if (event.matches) {
+      if (observer) observer.disconnect();
+      revealAll();
+      return;
     }
 
-    revealImmediately(
-      findElements(document, REVEAL_SELECTOR)
-    );
+    if (observer) observer.disconnect();
+
+    observer = createObserver();
+
+    getElements(document, CONFIG.selector).forEach((element) => {
+      element.classList.remove(CONFIG.visibleClass);
+    });
+
+    observeElements();
   }
 
-  function startAnimations() {
+  function start() {
     if (document.body.dataset.componentsLoaded === "true") {
       initializeAnimations();
       return;
@@ -192,19 +187,16 @@
     );
   }
 
-  if (typeof reducedMotion.addEventListener === "function") {
-    reducedMotion.addEventListener(
-      "change",
-      handleMotionChange
-    );
+  if (typeof motionQuery.addEventListener === "function") {
+    motionQuery.addEventListener("change", handleMotionChange);
   } else {
-    reducedMotion.addListener(handleMotionChange);
+    motionQuery.addListener(handleMotionChange);
   }
 
   window.PortfolioAnimations = {
-    refresh: refreshAnimations
+    refresh,
+    initialize: initializeAnimations
   };
 
-  startAnimations();
-
+  start();
 })();
