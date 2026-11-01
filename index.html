@@ -1,37 +1,34 @@
 
-<!--
-  FILE: index.html
-  PROJECT: PORTFOLIO-M V2.0
-  BRAND: MAGISTO TECHY
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- SEO -->
     <meta name="author" content="Abhinand A.S.">
-    <meta name="description" content="Explore the portfolio of Abhinand A.S. — Tech Content Creator, UGC Creator and Digital Creative from Kerala, India.">
+    <meta name="description" content="Abhinand A.S. — Tech Content Creator and UGC Creator from Kerala, India. Explore technology content, creative work and brand collaborations.">
     <meta name="theme-color" content="#080A0B">
 
-    <meta property="og:title" content="MAGISTO TECHY | Personal Portfolio">
-    <meta property="og:description" content="Technology, creativity and digital experiences by Abhinand A.S.">
+    <meta property="og:title" content="MAGISTO TECHY | Abhinand A.S.">
+    <meta property="og:description" content="Exploring technology. Creating impact.">
     <meta property="og:type" content="website">
 
     <title>MAGISTO TECHY | Abhinand A.S.</title>
 
-    <!-- GOOGLE FONTS -->
+    <!-- FONT CONNECTIONS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    <!-- TYPOGRAPHY -->
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
     <!-- MAIN STYLESHEET -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="./css/style.css?v=3.0">
+
 </head>
 
 <body data-root="./">
@@ -41,15 +38,15 @@
         Skip to content
     </a>
 
-    <!-- NAVIGATION COMPONENT -->
+    <!-- NAVIGATION -->
     <div data-component="navbar"></div>
 
     <main id="main-content">
 
-        <!-- HERO COMPONENT -->
+        <!-- HERO -->
         <div data-component="hero"></div>
 
-        <!-- STATISTICS COMPONENT -->
+        <!-- STATISTICS -->
         <div data-component="statistics"></div>
 
         <!-- ABOUT PREVIEW -->
@@ -90,7 +87,7 @@
                             digital audiences.
                         </p>
 
-                        <a href="pages/about.html" class="btn btn-outline">
+                        <a href="./pages/about.html" class="btn btn-outline">
                             Explore My Story
                             <span aria-hidden="true">↗</span>
                         </a>
@@ -103,13 +100,13 @@
 
         </section>
 
-        <!-- SKILLS COMPONENT -->
+        <!-- SKILLS -->
         <div data-component="skills"></div>
 
-        <!-- PROJECTS COMPONENT -->
+        <!-- INSTAGRAM REEL SHOWCASE -->
         <div data-component="project-cards"></div>
 
-        <!-- SERVICES PREVIEW -->
+        <!-- SERVICES -->
         <section class="section services-preview" id="services">
 
             <div class="container">
@@ -175,7 +172,7 @@
 
                 <div class="section-action reveal">
 
-                    <a href="pages/services.html" class="btn btn-outline">
+                    <a href="./pages/services.html" class="btn btn-outline">
                         Explore Services
                         <span aria-hidden="true">↗</span>
                     </a>
@@ -186,12 +183,12 @@
 
         </section>
 
-        <!-- CONTACT COMPONENT -->
+        <!-- CONTACT -->
         <div data-component="contact-section"></div>
 
     </main>
 
-    <!-- FOOTER COMPONENT -->
+    <!-- FOOTER -->
     <div data-component="footer"></div>
 
     <!-- BACK TO TOP -->
@@ -204,15 +201,12 @@
         ↑
     </button>
 
-    <!--
-      SINGLE ENTRY POINT:
-      component-loader.js loads the HTML components first,
-      then loads navigation, animations, interactions and main
-      scripts sequentially.
-
-      Do not add those four scripts separately here.
+    <!-- COMPONENT LOADER
+         Loads shared components and required JavaScript.
+         Do not add navigation.js, animations.js,
+         interactions.js or main.js separately here.
     -->
-    <script src="js/component-loader.js" defer></script>
+    <script src="./js/component-loader.js?v=3.0" defer></script>
 
 </body>
 </html>
