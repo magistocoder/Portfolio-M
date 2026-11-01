@@ -1,27 +1,43 @@
 
 /* =========================================================
    FILE: js/animations.js
-   PROJECT: PORTFOLIO-M V2.0
-   PURPOSE: Scroll reveal and entrance animations
-   BRAND: MAGISTO TECHY
+   PROJECT: PORTFOLIO-M
+   PURPOSE: Automatic scroll reveal + stagger animations
    ========================================================= */
 
 (() => {
   "use strict";
 
-  // -------------------------------------------------------
-  // CONFIGURATION
-  // -------------------------------------------------------
+  const REVEAL_SELECTOR =
+    ".reveal, .reveal-left, .reveal-right";
+
+  const AUTO_REVEAL_SELECTOR = [
+    ".hero-content",
+    ".hero-visual",
+    ".section-heading",
+    ".about-preview-content",
+    ".statistics-grid > *",
+    ".skills-grid > *",
+    ".projects-grid > *",
+    ".services-preview-grid > *",
+    ".journey-grid > *",
+    ".contact-cta-card",
+    ".footer-main > *"
+  ].join(",");
+
+  const STAGGER_GROUP_SELECTOR = [
+    ".statistics-grid",
+    ".skills-grid",
+    ".projects-grid",
+    ".services-preview-grid",
+    ".journey-grid",
+    ".footer-main"
+  ].join(",");
 
   const CONFIG = {
-    revealSelector: ".reveal, .reveal-left, .reveal-right",
-    staggerSelector: "[data-stagger]",
-    visibleClass: "is-visible",
-
-    staggerDelay: 100,
-
-    observerThreshold: 0.12,
-    observerRootMargin: "0px 0px -50px 0px"
+    staggerDelay: 90,
+    threshold: 0.08,
+    rootMargin: "0px 0px -8% 0px"
   };
 
   let observer = null;
@@ -31,53 +47,58 @@
     "(prefers-reduced-motion: reduce)"
   );
 
-  // -------------------------------------------------------
-  // IMMEDIATE REVEAL
-  // -------------------------------------------------------
+  function findElements(root, selector) {
+    const elements = [];
 
-  function revealImmediately(elements) {
-    elements.forEach((element) => {
-      element.classList.add(CONFIG.visibleClass);
-      element.style.transitionDelay = "0ms";
+    if (root instanceof Element && root.matches(selector)) {
+      elements.push(root);
+    }
+
+    if (root.querySelectorAll) {
+      elements.push(...root.querySelectorAll(selector));
+    }
+
+    return [...new Set(elements)];
+  }
+
+  function prepareAutomaticReveals(root = document) {
+    const targets = findElements(
+      root,
+      AUTO_REVEAL_SELECTOR
+    );
+
+    targets.forEach((element) => {
+      if (
+        !element.classList.contains("reveal") &&
+        !element.classList.contains("reveal-left") &&
+        !element.classList.contains("reveal-right")
+      ) {
+        element.classList.add("reveal");
+      }
     });
   }
 
-  // -------------------------------------------------------
-  // STAGGER ANIMATIONS
-  // -------------------------------------------------------
-
   function initializeStaggerGroups(root = document) {
-    const groups = [];
-
-    if (
-      root instanceof Element &&
-      root.matches(CONFIG.staggerSelector)
-    ) {
-      groups.push(root);
-    }
-
-    groups.push(
-      ...root.querySelectorAll(CONFIG.staggerSelector)
+    const groups = findElements(
+      root,
+      STAGGER_GROUP_SELECTOR
     );
 
     groups.forEach((group) => {
-      Array.from(group.children).forEach(
-        (child, index) => {
-          if (reducedMotion.matches) {
-            child.style.transitionDelay = "0ms";
-            return;
-          }
-
-          child.style.transitionDelay =
-            `${index * CONFIG.staggerDelay}ms`;
-        }
-      );
+      Array.from(group.children).forEach((child, index) => {
+        child.style.transitionDelay = reducedMotion.matches
+          ? "0ms"
+          : `${Math.min(index, 6) * CONFIG.staggerDelay}ms`;
+      });
     });
   }
 
-  // -------------------------------------------------------
-  // OBSERVER SETUP
-  // -------------------------------------------------------
+  function revealImmediately(elements) {
+    elements.forEach((element) => {
+      element.classList.add("is-visible");
+      element.style.transitionDelay = "0ms";
+    });
+  }
 
   function createObserver() {
     if (!("IntersectionObserver" in window)) {
@@ -89,39 +110,22 @@
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
 
-          entry.target.classList.add(
-            CONFIG.visibleClass
-          );
-
+          entry.target.classList.add("is-visible");
           currentObserver.unobserve(entry.target);
         });
       },
       {
-        threshold: CONFIG.observerThreshold,
-        rootMargin: CONFIG.observerRootMargin
+        threshold: CONFIG.threshold,
+        rootMargin: CONFIG.rootMargin
       }
     );
   }
 
-  // -------------------------------------------------------
-  // INITIALIZE REVEAL ELEMENTS
-  // -------------------------------------------------------
-
-  function initializeRevealElements(root = document) {
-    const elements = [];
-
-    if (
-      root instanceof Element &&
-      root.matches(CONFIG.revealSelector)
-    ) {
-      elements.push(root);
-    }
-
-    elements.push(
-      ...root.querySelectorAll(CONFIG.revealSelector)
+  function observeElements(root = document) {
+    const elements = findElements(
+      root,
+      REVEAL_SELECTOR
     );
-
-    if (!elements.length) return;
 
     if (reducedMotion.matches || !observer) {
       revealImmediately(elements);
@@ -129,38 +133,28 @@
     }
 
     elements.forEach((element) => {
-      if (element.classList.contains(CONFIG.visibleClass)) {
-        return;
+      if (!element.classList.contains("is-visible")) {
+        observer.observe(element);
       }
-
-      observer.observe(element);
     });
   }
-
-  // -------------------------------------------------------
-  // INITIALIZE ANIMATIONS
-  // -------------------------------------------------------
 
   function initializeAnimations() {
     if (initialized) return;
 
-    initialized = true;
+    prepareAutomaticReveals();
+    initializeStaggerGroups();
 
     observer = createObserver();
 
-    initializeStaggerGroups();
-    initializeRevealElements();
-
     document.body.dataset.animationsReady = "true";
 
-    console.info(
-      "[Animations] Successfully initialized."
-    );
-  }
+    observeElements();
 
-  // -------------------------------------------------------
-  // REFRESH DYNAMIC CONTENT
-  // -------------------------------------------------------
+    initialized = true;
+
+    console.info("[Animations] Initialized successfully.");
+  }
 
   function refreshAnimations(root = document) {
     if (!initialized) {
@@ -168,26 +162,34 @@
       return;
     }
 
+    prepareAutomaticReveals(root);
     initializeStaggerGroups(root);
-    initializeRevealElements(root);
+    observeElements(root);
   }
-
-  // -------------------------------------------------------
-  // REDUCED MOTION CHANGES
-  // -------------------------------------------------------
 
   function handleMotionChange(event) {
     if (!event.matches) return;
-
-    const elements = document.querySelectorAll(
-      CONFIG.revealSelector
-    );
 
     if (observer) {
       observer.disconnect();
     }
 
-    revealImmediately(Array.from(elements));
+    revealImmediately(
+      findElements(document, REVEAL_SELECTOR)
+    );
+  }
+
+  function startAnimations() {
+    if (document.body.dataset.componentsLoaded === "true") {
+      initializeAnimations();
+      return;
+    }
+
+    document.addEventListener(
+      "portfolio:components-loaded",
+      initializeAnimations,
+      { once: true }
+    );
   }
 
   if (typeof reducedMotion.addEventListener === "function") {
@@ -199,50 +201,9 @@
     reducedMotion.addListener(handleMotionChange);
   }
 
-  // -------------------------------------------------------
-  // CLEANUP
-  // -------------------------------------------------------
-
-  function destroyAnimations() {
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
-
-    initialized = false;
-
-    delete document.body.dataset.animationsReady;
-
-    console.info("[Animations] Observer cleaned up.");
-  }
-
-  // -------------------------------------------------------
-  // PUBLIC API
-  // -------------------------------------------------------
-
   window.PortfolioAnimations = {
-    refresh: refreshAnimations,
-    destroy: destroyAnimations
+    refresh: refreshAnimations
   };
-
-  // -------------------------------------------------------
-  // START AFTER COMPONENT LOADING
-  // -------------------------------------------------------
-
-  function startAnimations() {
-    if (
-      document.body.dataset.componentsLoaded === "true"
-    ) {
-      initializeAnimations();
-      return;
-    }
-
-    document.addEventListener(
-      "portfolio:components-loaded",
-      initializeAnimations,
-      { once: true }
-    );
-  }
 
   startAnimations();
 
