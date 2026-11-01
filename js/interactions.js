@@ -1,18 +1,28 @@
 
 /* =========================================================
    FILE: js/interactions.js
-   PROJECT: PORTFOLIO-M V2.0
-   PURPOSE: General UI interactions
+   PROJECT: PORTFOLIO-M
+   PURPOSE: Shared website interactions
+   DESIGN: Liquid Glass UI
    ========================================================= */
 
 (() => {
   "use strict";
 
+  // Prevent duplicate initialization.
+  if (window.PortfolioInteractionsInitialized) return;
+  window.PortfolioInteractionsInitialized = true;
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+
   let initialized = false;
 
-  /**
-   * Wait until component loading has actually finished.
-   */
+  // -------------------------------------------------------
+  // COMPONENT LOADING
+  // -------------------------------------------------------
+
   function onComponentsReady(callback) {
     if (document.body.dataset.componentsLoaded === "true") {
       callback();
@@ -26,60 +36,54 @@
     );
   }
 
-  /**
-   * Update all copyright year placeholders.
-   */
-  function updateCurrentYear() {
-    const year = new Date().getFullYear();
+  // -------------------------------------------------------
+  // BACK TO TOP
+  // -------------------------------------------------------
 
-    document.querySelectorAll("[data-current-year]").forEach(
-      (element) => {
-        element.textContent = year;
-      }
-    );
-  }
-
-  /**
-   * Initialize back-to-top functionality.
-   */
   function initializeBackToTop() {
-    const button = document.querySelector("[data-back-to-top]");
+    const buttons = document.querySelectorAll(
+      "[data-back-to-top]"
+    );
 
-    if (!button || button.dataset.backToTopReady === "true") {
-      return;
-    }
+    buttons.forEach((button) => {
+      if (button.dataset.interactionReady === "true") return;
 
-    button.dataset.backToTopReady = "true";
+      button.dataset.interactionReady = "true";
 
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+      function updateVisibility() {
+        const visible = window.scrollY > 400;
 
-    const updateVisibility = () => {
-      const visible = window.scrollY > 400;
+        button.classList.toggle("is-visible", visible);
 
-      button.classList.toggle("is-visible", visible);
-      button.setAttribute("aria-hidden", String(!visible));
-      button.tabIndex = visible ? 0 : -1;
-    };
+        button.setAttribute(
+          "aria-hidden",
+          String(!visible)
+        );
 
-    button.addEventListener("click", () => {
-      window.scrollTo({
-        top: 0,
-        behavior: reducedMotion ? "auto" : "smooth"
+        button.tabIndex = visible ? 0 : -1;
+      }
+
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        window.scrollTo({
+          top: 0,
+          behavior: reducedMotion.matches ? "auto" : "smooth"
+        });
+      });
+
+      updateVisibility();
+
+      window.addEventListener("scroll", updateVisibility, {
+        passive: true
       });
     });
-
-    window.addEventListener("scroll", updateVisibility, {
-      passive: true
-    });
-
-    updateVisibility();
   }
 
-  /**
-   * Smooth scrolling for same-page links.
-   */
+  // -------------------------------------------------------
+  // SMOOTH SCROLLING
+  // -------------------------------------------------------
+
   function initializeSmoothScrolling() {
     if (document.body.dataset.smoothScrollReady === "true") {
       return;
@@ -108,71 +112,106 @@
 
       event.preventDefault();
 
-      const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches;
-
       target.scrollIntoView({
-        behavior: reducedMotion ? "auto" : "smooth",
+        behavior: reducedMotion.matches ? "auto" : "smooth",
         block: "start"
       });
 
+      // Keep the URL hash in sync without creating
+      // unnecessary browser history entries.
       if (window.history?.replaceState) {
-        window.history.replaceState(null, "", href);
+        window.history.replaceState(
+          null,
+          "",
+          href
+        );
       }
     });
   }
 
-  /**
-   * Secure external links.
-   */
-  function secureExternalLinks() {
-    document.querySelectorAll('a[target="_blank"]').forEach(
-      (link) => {
-        const rel = new Set(
-          (link.getAttribute("rel") || "")
-            .split(/\s+/)
-            .filter(Boolean)
-        );
+  // -------------------------------------------------------
+  // EXTERNAL LINK SECURITY
+  // -------------------------------------------------------
 
-        rel.add("noopener");
-        rel.add("noreferrer");
+  function secureExternalLinks(root = document) {
+    const links = [];
 
-        link.setAttribute("rel", Array.from(rel).join(" "));
+    if (
+      root instanceof Element &&
+      root.matches('a[target="_blank"]')
+    ) {
+      links.push(root);
+    }
+
+    if (root.querySelectorAll) {
+      links.push(
+        ...root.querySelectorAll('a[target="_blank"]')
+      );
+    }
+
+    links.forEach((link) => {
+      const rel = new Set(
+        (link.getAttribute("rel") || "")
+          .split(/\s+/)
+          .filter(Boolean)
+      );
+
+      rel.add("noopener");
+      rel.add("noreferrer");
+
+      link.setAttribute(
+        "rel",
+        Array.from(rel).join(" ")
+      );
+    });
+  }
+
+  // -------------------------------------------------------
+  // BUTTON FEEDBACK
+  // -------------------------------------------------------
+
+  function initializeButtonFeedback(root = document) {
+    const buttons = root.querySelectorAll(
+      ".btn, .social-link, .contact-detail"
+    );
+
+    buttons.forEach((button) => {
+      if (button.dataset.feedbackReady === "true") return;
+
+      button.dataset.feedbackReady = "true";
+
+      button.addEventListener("pointerdown", () => {
+        button.classList.add("is-pressed");
+      });
+
+      ["pointerup", "pointerleave", "pointercancel"].forEach(
+        (eventName) => {
+          button.addEventListener(eventName, () => {
+            button.classList.remove("is-pressed");
+          });
+        }
+      );
+    });
+  }
+
+  // -------------------------------------------------------
+  // COPYRIGHT YEAR
+  // -------------------------------------------------------
+
+  function updateCurrentYear() {
+    const year = new Date().getFullYear();
+
+    document.querySelectorAll("[data-current-year]").forEach(
+      (element) => {
+        element.textContent = year;
       }
     );
   }
 
-  /**
-   * Prepare optional AJAX contact forms.
-   * Standard FormSubmit forms are not intercepted.
-   */
-  function initializeContactForms() {
-    document.querySelectorAll(
-      'form[data-ajax="true"]'
-    ).forEach((form) => {
-      if (form.dataset.interactionReady === "true") return;
+  // -------------------------------------------------------
+  // INITIALIZE INTERACTIONS
+  // -------------------------------------------------------
 
-      form.dataset.interactionReady = "true";
-
-      form.addEventListener("submit", (event) => {
-        const status = form.querySelector("[data-form-status]");
-
-        if (!status) return;
-
-        event.preventDefault();
-
-        status.textContent =
-          "AJAX submission is not configured. Please use standard form submission.";
-
-        status.setAttribute("role", "status");
-      });
-    });
-  }
-
-  /**
-   * Initialize all interactions once.
-   */
   function initializeInteractions() {
     if (initialized) return;
 
@@ -182,21 +221,33 @@
     initializeBackToTop();
     initializeSmoothScrolling();
     secureExternalLinks();
-    initializeContactForms();
+    initializeButtonFeedback();
+
+    document.body.dataset.interactionsReady = "true";
+
+    console.info(
+      "[Portfolio] Interactions initialized successfully."
+    );
   }
 
-  /**
-   * Refresh elements inserted after initial loading.
-   */
-  function refreshInteractions() {
+  // -------------------------------------------------------
+  // REFRESH FOR DYNAMIC COMPONENTS
+  // -------------------------------------------------------
+
+  function refreshInteractions(root = document) {
     updateCurrentYear();
     initializeBackToTop();
-    secureExternalLinks();
-    initializeContactForms();
+    secureExternalLinks(root);
+    initializeButtonFeedback(root);
   }
 
+  // -------------------------------------------------------
+  // PUBLIC API
+  // -------------------------------------------------------
+
   window.PortfolioInteractions = {
-    refresh: refreshInteractions
+    refresh: refreshInteractions,
+    initialize: initializeInteractions
   };
 
   onComponentsReady(initializeInteractions);
