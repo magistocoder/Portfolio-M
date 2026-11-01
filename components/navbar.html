@@ -1,41 +1,69 @@
 
-<!-- FILE: components/navbar.html -->
+<!-- =====================================================
+     PORTFOLIO-M — RESPONSIVE NAVIGATION
+     ===================================================== -->
 
 <header class="site-header">
-  <nav class="navbar container" aria-label="Main navigation">
 
-    <a href="../index.html" class="navbar-brand" aria-label="MAGISTO TECHY Home">
-      <span class="brand-mark">M</span>
-      <span class="brand-name">
-        MAGISTO<span class="text-accent">TECHY</span>
-      </span>
-    </a>
+    <nav class="navbar container" aria-label="Main navigation">
 
-    <button
-      class="menu-toggle"
-      type="button"
-      aria-label="Open navigation menu"
-      aria-expanded="false"
-      aria-controls="primary-navigation"
-    >
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+        <!-- BRAND -->
+        <a
+            href="index.html"
+            class="navbar-brand"
+            aria-label="MAGISTO TECHY Home"
+        >
+            <span class="brand-mark">M</span>
 
-    <div class="nav-menu" id="primary-navigation">
+            <span class="brand-name">
+                MAGISTO<span class="text-accent">TECHY</span>
+            </span>
+        </a>
 
-      <a href="../index.html" class="nav-link">Home</a>
-      <a href="../pages/about.html" class="nav-link">About</a>
-      <a href="../pages/projects.html" class="nav-link">Projects</a>
-      <a href="../pages/services.html" class="nav-link">Services</a>
-      <a href="../pages/collaborations.html" class="nav-link">Collaborations</a>
 
-      <a href="../pages/contact.html" class="nav-contact">
-        Let's Talk <span aria-hidden="true">↗</span>
-      </a>
+        <!-- MOBILE MENU BUTTON -->
+        <button
+            class="menu-toggle"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="primary-navigation"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
 
-    </div>
 
-  </nav>
+        <!-- NAVIGATION LINKS -->
+        <div class="nav-menu" id="primary-navigation">
+
+            <a href="index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="pages/about.html" class="nav-link">
+                About
+            </a>
+
+            <a href="pages/projects.html" class="nav-link">
+                Projects
+            </a>
+
+            <a href="pages/services.html" class="nav-link">
+                Services
+            </a>
+
+            <a href="pages/collaborations.html" class="nav-link">
+                Collaborations
+            </a>
+
+            <a href="pages/contact.html" class="nav-contact">
+                Let's Talk <span aria-hidden="true">↗</span>
+            </a>
+
+        </div>
+
+    </nav>
+
 </header>
