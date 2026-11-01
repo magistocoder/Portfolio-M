@@ -1,584 +1,126 @@
 
 /* =========================================================
-   PORTFOLIO-M — UI POLISH
-   Clean layout • Liquid Glass • Responsive composition
+   INSTAGRAM REELS SHOWCASE
+   Simple • Responsive • Liquid Glass
    ========================================================= */
 
-/* 1. EASY DESIGN CONTROLS */
-
-:root {
-  --ui-width: 1220px;
-  --ui-section-gap: clamp(4rem, 8vw, 7rem);
-  --ui-card-padding: clamp(1.2rem, 2vw, 1.8rem);
-  --ui-radius: 24px;
-  --ui-blur: 18px;
-  --ui-speed: 500ms;
-
-  --ui-glass: rgba(255, 255, 255, 0.045);
-  --ui-border: rgba(255, 255, 255, 0.09);
-  --ui-glow: rgba(184, 255, 56, 0.12);
+.reels-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  align-items: start;
 }
 
-/* COMPACT MODE
-   Add data-layout="compact" to body to activate.
-*/
-
-body[data-layout="compact"] {
-  --ui-section-gap: 3.5rem;
-  --ui-card-padding: 1.1rem;
-  --ui-radius: 18px;
+.reel-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--ui-border, rgba(255,255,255,.09));
+  border-radius: 22px;
+  background: rgba(255,255,255,.035);
+  box-shadow: 0 16px 45px rgba(0,0,0,.2);
+  transition: transform 300ms ease, border-color 300ms ease;
 }
 
-/* 2. GLOBAL COMPOSITION */
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 100px;
+.reel-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-primary, #b8ff38);
 }
 
-body {
-  background:
-    radial-gradient(
-      ellipse at 80% 5%,
-      rgba(184, 255, 56, 0.055),
-      transparent 35%
-    ),
-    radial-gradient(
-      ellipse at 5% 45%,
-      rgba(80, 110, 95, 0.08),
-      transparent 35%
-    ),
-    var(--color-background, #080A0B);
-  overflow-x: clip;
-}
-
-.container {
-  width: min(100% - 40px, var(--ui-width));
-  margin-inline: auto;
-}
-
-.section,
-.section-padding {
-  padding-block: var(--ui-section-gap);
-}
-
-.section-heading {
-  max-width: 760px;
-  margin-bottom: 34px;
-}
-
-.section-heading h2 {
-  margin-bottom: 16px;
-  line-height: 1.08;
-  letter-spacing: -0.045em;
-}
-
-/* 3. FLOATING GLASS NAVIGATION */
-
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  padding-block: 12px;
-  background: rgba(8, 10, 11, 0.55);
-  backdrop-filter: blur(var(--ui-blur));
-  -webkit-backdrop-filter: blur(var(--ui-blur));
-}
-
-.navbar {
+.reel-video {
   position: relative;
-  min-height: 66px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 10px 20px;
-  border: 1px solid var(--ui-border);
-  border-radius: 999px;
-  background: rgba(22, 26, 25, 0.82);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background: #111;
 }
 
-.navbar-brand {
-  flex-shrink: 0;
+.reel-video iframe {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #111;
 }
 
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: clamp(12px, 2vw, 26px);
+.reel-info {
+  padding: 20px;
 }
 
-.nav-link {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  transition: color var(--ui-speed) ease;
+.reel-label {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--color-primary, #b8ff38);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .12em;
 }
 
-.nav-link:hover,
-.nav-link.active {
-  color: var(--color-primary);
+.reel-info h3 {
+  margin: 0 0 7px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.35rem;
+  line-height: 1.2;
 }
 
-.nav-contact {
+.reel-info p {
+  margin: 0 0 18px;
+  color: var(--color-text-secondary, #aaa);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+.reel-info a {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 11px 17px;
-  border-radius: 999px;
-  background: var(--color-primary);
-  color: #080A0B;
+  gap: 7px;
+  color: var(--color-primary, #b8ff38);
+  font-size: .88rem;
   font-weight: 700;
+  text-decoration: none;
+  transition: gap 200ms ease;
 }
 
-.nav-contact:hover {
-  color: #080A0B;
-  transform: translateY(-2px);
-}
-
-/* 4. HERO COMPOSITION */
-
-.hero-section {
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-height: min(780px, calc(100svh - 85px));
-  padding-block: clamp(4rem, 8vw, 7rem);
-}
-
-.hero-grid {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1.1fr)
-    minmax(280px, 0.9fr);
-  align-items: center;
-  gap: clamp(2rem, 6vw, 6rem);
-}
-
-.hero-content {
-  max-width: 680px;
-  min-width: 0;
-}
-
-.hero-content h1 {
-  margin-bottom: 24px;
-  font-size: clamp(3rem, 7.3vw, 6.2rem);
-  line-height: 0.99;
-  letter-spacing: -0.065em;
-  overflow-wrap: anywhere;
-}
-
-.hero-description {
-  max-width: 560px;
-  font-size: clamp(1rem, 1.5vw, 1.12rem);
-  line-height: 1.85;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 13px;
-  margin-top: 30px;
-}
-
-.hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+.reel-info a:hover {
   gap: 12px;
-  margin-top: 30px;
-  font-size: 0.82rem;
-  color: var(--color-text-secondary);
 }
 
-.hero-visual {
-  position: relative;
-  min-width: 0;
-}
+/* TABLET */
 
-.hero-image-frame {
-  position: relative;
-  width: min(100%, 430px);
-  aspect-ratio: 4 / 5;
-  margin-inline: auto;
-  overflow: hidden;
-  border: 1px solid var(--ui-border);
-  border-radius: 30px;
-  background: var(--color-surface);
-  box-shadow:
-    0 35px 90px rgba(0, 0, 0, 0.4),
-    0 0 45px var(--ui-glow);
-}
-
-.hero-image-frame img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.hero-floating-card {
-  position: absolute;
-  right: -18px;
-  bottom: 35px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  max-width: 270px;
-  padding: 15px 18px;
-  border: 1px solid var(--ui-border);
-  border-radius: 17px;
-  background: rgba(20, 25, 23, 0.9);
-  backdrop-filter: blur(var(--ui-blur));
-  -webkit-backdrop-filter: blur(var(--ui-blur));
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3);
-}
-
-.hero-floating-card small {
-  display: block;
-  color: var(--color-text-secondary);
-}
-
-/* 5. CONSISTENT CARD GRIDS */
-
-.projects-grid,
-.skills-grid,
-.statistics-grid,
-.services-preview-grid,
-.journey-grid {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(min(100%, 245px), 1fr)
-  );
-  gap: 18px;
-}
-
-.project-card,
-.skill-card,
-.stat-card,
-.service-card,
-.journey-card,
-.cta-card {
-  min-width: 0;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.055),
-      rgba(255, 255, 255, 0.015)
-    );
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
-  transition:
-    transform 350ms ease,
-    border-color 350ms ease,
-    background 350ms ease,
-    box-shadow 350ms ease;
-}
-
-.skill-card,
-.stat-card,
-.service-card,
-.journey-card,
-.cta-card {
-  padding: var(--ui-card-padding);
-}
-
-.project-card {
-  overflow: hidden;
-}
-
-.project-info,
-.project-content {
-  padding: var(--ui-card-padding);
-}
-
-.project-image {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background: var(--color-surface);
-}
-
-.project-image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 600ms ease;
-}
-
-.project-card:hover .project-image img {
-  transform: scale(1.045);
-}
-
-.project-card:hover,
-.skill-card:hover,
-.stat-card:hover,
-.service-card:hover,
-.journey-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--color-border-hover);
-  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.28);
-}
-
-/* 6. STATISTICS */
-
-.stat-number {
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1;
-  letter-spacing: -0.05em;
-}
-
-.stat-icon,
-.skill-icon {
-  color: var(--color-primary);
-}
-
-/* 7. TWO-COLUMN PAGE LAYOUTS */
-
-.two-column {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  gap: clamp(2rem, 5vw, 5rem);
-}
-
-.about-profile-image img {
-  display: block;
-  width: 100%;
-  max-width: 450px;
-  margin-inline: auto;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-}
-
-.page-hero {
-  padding-block: clamp(4rem, 8vw, 7rem) 2rem;
-}
-
-.contact-details {
-  display: grid;
-  gap: 14px;
-}
-
-.contact-detail {
-  padding: 17px;
-  border: 1px solid var(--ui-border);
-  border-radius: 16px;
-  background: var(--ui-glass);
-}
-
-/* 8. BUTTON POLISH */
-
-.btn {
-  min-height: 49px;
-  padding-inline: 23px;
-  transition:
-    transform 250ms ease,
-    box-shadow 250ms ease,
-    background 250ms ease;
-}
-
-.btn:hover {
-  transform: translateY(-3px);
-}
-
-.btn:focus-visible,
-a:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 4px;
-}
-
-/* 9. REPEATING SCROLL REVEALS */
-
-.reveal,
-.reveal-left,
-.reveal-right {
-  opacity: 1;
-  transform: none;
-  will-change: opacity, transform;
-  transition:
-    opacity var(--ui-speed) cubic-bezier(.2, .7, .2, 1),
-    transform var(--ui-speed) cubic-bezier(.2, .7, .2, 1);
-}
-
-body[data-animations-ready="true"] .reveal:not(.is-visible) {
-  opacity: 0;
-  transform: translateY(24px);
-}
-
-body[data-animations-ready="true"] .reveal-left:not(.is-visible) {
-  opacity: 0;
-  transform: translateX(-28px);
-}
-
-body[data-animations-ready="true"] .reveal-right:not(.is-visible) {
-  opacity: 0;
-  transform: translateX(28px);
-}
-
-/* TURN SCROLL ANIMATIONS OFF:
-   Add data-motion="off" to the body element.
-*/
-
-body[data-motion="off"] .reveal,
-body[data-motion="off"] .reveal-left,
-body[data-motion="off"] .reveal-right,
-body[data-motion="off"][data-animations-ready="true"] .reveal:not(.is-visible),
-body[data-motion="off"][data-animations-ready="true"] .reveal-left:not(.is-visible),
-body[data-motion="off"][data-animations-ready="true"] .reveal-right:not(.is-visible) {
-  opacity: 1 !important;
-  transform: none !important;
-  transition: none !important;
-  will-change: auto;
-}
-
-/* 10. TABLET */
-
-@media (max-width: 900px) {
-  .hero-section {
-    min-height: auto;
-  }
-
-  .hero-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.8fr);
-    gap: 30px;
-  }
-
-  .hero-content h1 {
-    font-size: clamp(2.7rem, 6vw, 4.5rem);
-  }
-
-  .two-column {
-    gap: 28px;
+@media (max-width: 950px) {
+  .reels-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
   }
 }
 
-/* 11. MOBILE */
+/* MOBILE */
 
-@media (max-width: 700px) {
-  .container {
-    width: min(100% - 30px, var(--ui-width));
-  }
-
-  .section,
-  .section-padding {
-    padding-block: 3.8rem;
-  }
-
-  .hero-section {
-    padding-block: 3.5rem;
-  }
-
-  .hero-grid,
-  .two-column {
+@media (max-width: 600px) {
+  .reels-grid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
   }
 
-  .hero-content {
-    order: 1;
-  }
-
-  .hero-visual {
-    order: 0;
-    width: min(100%, 390px);
-    margin-inline: auto;
-  }
-
-  .hero-image-frame {
-    width: min(100%, 340px);
-  }
-
-  .hero-floating-card {
-    right: 0;
-    bottom: 18px;
-    max-width: 235px;
-  }
-
-  .hero-content h1 {
-    font-size: clamp(2.8rem, 12vw, 4.3rem);
-  }
-
-  .hero-actions {
-    align-items: stretch;
-  }
-
-  .hero-actions .btn {
-    flex: 1 1 150px;
-  }
-
-  .navbar {
-    min-height: 58px;
-    padding-inline: 14px;
+  .reel-card {
     border-radius: 18px;
   }
 
-  .nav-menu {
-    gap: 8px;
+  .reel-info {
+    padding: 17px;
   }
 
-  .projects-grid,
-  .skills-grid,
-  .statistics-grid,
-  .services-preview-grid,
-  .journey-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-  }
-
-  .section-heading {
-    margin-bottom: 25px;
+  .reel-info h3 {
+    font-size: 1.2rem;
   }
 }
 
-/* 12. SMALL PHONES */
-
-@media (max-width: 380px) {
-  .container {
-    width: min(100% - 24px, var(--ui-width));
-  }
-
-  .hero-content h1 {
-    font-size: 2.65rem;
-  }
-
-  .hero-floating-card {
-    max-width: 205px;
-    padding: 12px;
-  }
-
-  .btn {
-    width: 100%;
-  }
-}
-
-/* 13. ACCESSIBILITY */
+/* ACCESSIBILITY */
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  .reveal,
-  .reveal-left,
-  .reveal-right {
-    opacity: 1 !important;
-    transform: none !important;
+  .reel-card,
+  .reel-info a {
+    transition: none;
   }
 }
