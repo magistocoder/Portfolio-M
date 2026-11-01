@@ -1,161 +1,321 @@
 
 /* =========================================================
-   PORTFOLIO-M — MAIN WEBSITE CONTROLLER
-   Version: 5.0
+   PORTFOLIO-M — MAIN CONTROLLER
+   Version: 6.0
+
+   Responsibilities:
+   - Active navigation link
+   - Header scroll state
+   - Animated statistics
+   - Image fallback handling
+   - Page initialization
+   - Safe component-loader integration
    ========================================================= */
 
 (() => {
   "use strict";
 
   if (window.PortfolioMainInitialized) return;
+
   window.PortfolioMainInitialized = true;
 
-  const Portfolio = {
-    initialized: false,
+  let initialized = false;
+  let headerScrollAttached = false;
+  let statsObserver = null;
 
-    init() {
-      if (this.initialized) return;
+  /* ---------------------------------------------------------
+     1. SHARED HELPERS
+     --------------------------------------------------------- */
 
-      this.initialized = true;
+  const prefersReducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      this.setCurrentYear();
-      this.setActiveNavigation();
-      this.markPageReady();
+  const selectAll = (selector, parent = document) =>
+    Array.from(parent.querySelectorAll(selector));
 
-      window.dispatchEvent(
-        new CustomEvent("portfolio:ready")
-      );
+  /* ---------------------------------------------------------
+     2. ACTIVE NAVIGATION LINK
+     --------------------------------------------------------- */
 
-      console.info("[Portfolio] Main controller ready.");
-    },
+  function initializeActiveNavigation() {
+    const currentPath = window.location.pathname
+      .replace(/\/+$/, "")
+      .toLowerCase();
 
-    setCurrentYear() {
-      const year = new Date().getFullYear();
+    const currentFile = currentPath.split("/").pop() || "index.html";
 
-      document.querySelectorAll(
-        "[data-current-year], #current-year"
-      ).forEach((element) => {
-        element.textContent = year;
-      });
-    },
+    const links = selectAll(".nav-menu a[href]");
 
-    normalizePath(path) {
-      if (!path) return "/";
+    links.forEach((link) => {
+      const href = link.getAttribute("href");
 
-      let normalized = path.replace(/\/+/g, "/");
+      if (!href || href.startsWith("#")) return;
 
-      // Treat /folder/index.html and /folder/ as equivalent.
-      normalized = normalized.replace(/\/index\.html$/i, "/");
+      let linkPath;
 
-      if (!normalized.endsWith("/")) {
-        normalized += "/";
+      try {
+        linkPath = new URL(href, document.baseURI).pathname
+          .replace(/\/+$/, "")
+          .toLowerCase();
+      } catch (error) {
+        return;
       }
 
-      return normalized;
-    },
+      const linkFile = linkPath.split("/").pop() || "index.html";
 
-    setActiveNavigation() {
-      const currentPath = this.normalizePath(
-        window.location.pathname
-      );
+      const isActive =
+        linkPath === currentPath ||
+        linkFile === currentFile;
 
-      const links = document.querySelectorAll(
-        ".nav-menu a[href], .navbar-links a[href]"
-      );
+      link.classList.toggle("active", isActive);
 
-      links.forEach((link) => {
-        const href = link.getAttribute("href");
+      if (isActive) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
 
-        if (
-          !href ||
-          href.startsWith("#") ||
-          href.startsWith("mailto:") ||
-          href.startsWith("tel:") ||
-          href.startsWith("javascript:")
-        ) {
-          return;
-        }
+  /* ---------------------------------------------------------
+     3. HEADER SCROLL EFFECT
+     --------------------------------------------------------- */
 
-        let linkURL;
+  function updateHeaderState() {
+    const header = document.querySelector(
+      ".site-header, .navbar"
+    );
 
-        try {
-          linkURL = new URL(href, window.location.href);
-        } catch {
-          return;
-        }
+    if (!header) return;
 
-        // Only highlight links pointing to this website.
-        if (linkURL.origin !== window.location.origin) {
-          return;
-        }
+    header.classList.toggle(
+      "is-scrolled",
+      window.scrollY > 30
+    );
+  }
 
-        const linkPath = this.normalizePath(
-          linkURL.pathname
-        );
+  function initializeHeaderScroll() {
+    updateHeaderState();
 
-        const isActive = linkPath === currentPath;
+    if (headerScrollAttached) return;
 
-        link.classList.toggle("active", isActive);
+    window.addEventListener(
+      "scroll",
+      updateHeaderState,
+      { passive: true }
+    );
 
-        if (isActive) {
-          link.setAttribute("aria-current", "page");
-        } else {
-          link.removeAttribute("aria-current");
-        }
-      });
-    },
+    headerScrollAttached = true;
+  }
 
-    markPageReady() {
-      document.documentElement.classList.add(
-        "portfolio-ready"
-      );
+  /* ---------------------------------------------------------
+     4. ANIMATED STATISTICS
+     --------------------------------------------------------- */
 
-      document.body.dataset.portfolioReady = "true";
-    },
+  function animateCounter(element) {
+    if (element.dataset.counterAnimated === "true") return;
 
-    refresh() {
-      this.setCurrentYear();
-      this.setActiveNavigation();
-    }
-  };
+    element.dataset.counterAnimated = "true";
 
-  window.Portfolio = Portfolio;
+    const rawValue =
+      element.dataset.count ||
+      element.dataset.target ||
+      element.textContent.trim();
 
-  function startPortfolio() {
-    const readyPromise = window.portfolioComponentsReady;
+    const numericValue = Number(
+      String(rawValue).replace(/[^0-9.-]/g, "")
+    );
 
-    if (
-      readyPromise &&
-      typeof readyPromise.then === "function"
-    ) {
-      readyPromise
-        .then(() => Portfolio.init())
-        .catch((error) => {
-          console.error(
-            "[Portfolio] Component loading failed:",
-            error
-          );
+    if (!Number.isFinite(numericValue)) return;
 
-          // Keep the page usable even if a component fails.
-          Portfolio.init();
-        });
+    const originalText = element.textContent.trim();
 
+    const prefix = originalText.match(/^[^0-9-]*/)?.[0] || "";
+    const suffix = originalText.match(/[^0-9.]+$/)?.[0] || "";
+
+    if (prefersReducedMotion()) {
+      element.textContent =
+        `${prefix}${numericValue.toLocaleString("en-IN")}${suffix}`;
       return;
     }
 
-    if (
-      document.body.dataset.componentsLoaded === "true"
-    ) {
-      Portfolio.init();
+    const duration = 1400;
+    const startTime = performance.now();
+
+    function updateCounter(currentTime) {
+      const progress = Math.min(
+        (currentTime - startTime) / duration,
+        1
+      );
+
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+      const currentValue = Math.round(
+        numericValue * easedProgress
+      );
+
+      element.textContent =
+        `${prefix}${currentValue.toLocaleString("en-IN")}${suffix}`;
+
+      if (progress < 1) {
+        requestAnimationFrame(updateCounter);
+      } else {
+        element.textContent =
+          `${prefix}${numericValue.toLocaleString("en-IN")}${suffix}`;
+      }
+    }
+
+    requestAnimationFrame(updateCounter);
+  }
+
+  function initializeStatistics() {
+    const counters = selectAll(
+      "[data-count], [data-counter], [data-target]"
+    );
+
+    if (!counters.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+      counters.forEach(animateCounter);
+      return;
+    }
+
+    if (statsObserver) {
+      statsObserver.disconnect();
+    }
+
+    statsObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          animateCounter(entry.target);
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.45
+      }
+    );
+
+    counters.forEach((counter) => {
+      statsObserver.observe(counter);
+    });
+  }
+
+  /* ---------------------------------------------------------
+     5. IMAGE FALLBACK HANDLING
+     --------------------------------------------------------- */
+
+  function initializeImageFallbacks() {
+    const images = selectAll("img");
+
+    images.forEach((image) => {
+      if (image.dataset.fallbackReady === "true") return;
+
+      image.dataset.fallbackReady = "true";
+
+      image.addEventListener("error", () => {
+        image.classList.add("image-load-error");
+
+        const fallback = image.closest(
+          ".hero-image-frame, .about-profile-image, .image-wrapper"
+        );
+
+        if (fallback) {
+          fallback.classList.add("has-image-error");
+        }
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------
+     6. EXTERNAL LINK TARGETS
+     --------------------------------------------------------- */
+
+  function initializeExternalLinks() {
+    selectAll('a[href^="http"]').forEach((link) => {
+      if (link.hostname === window.location.hostname) return;
+
+      if (link.hasAttribute("target")) return;
+
+      link.setAttribute("target", "_blank");
+
+      const rel = new Set(
+        (link.getAttribute("rel") || "")
+          .split(/\s+/)
+          .filter(Boolean)
+      );
+
+      rel.add("noopener");
+      rel.add("noreferrer");
+
+      link.setAttribute("rel", [...rel].join(" "));
+    });
+  }
+
+  /* ---------------------------------------------------------
+     7. PAGE INITIALIZATION
+     --------------------------------------------------------- */
+
+  function initializeMain() {
+    if (initialized) return;
+
+    initialized = true;
+
+    initializeActiveNavigation();
+    initializeHeaderScroll();
+    initializeStatistics();
+    initializeImageFallbacks();
+    initializeExternalLinks();
+
+    document.documentElement.classList.add("main-ready");
+
+    window.dispatchEvent(
+      new CustomEvent("portfolio:main-ready")
+    );
+  }
+
+  /* ---------------------------------------------------------
+     8. COMPONENT LOADER COMPATIBILITY
+     --------------------------------------------------------- */
+
+  function startMain() {
+    if (document.body?.dataset.componentsLoaded === "true") {
+      initializeMain();
       return;
     }
 
     document.addEventListener(
       "portfolio:components-loaded",
-      () => Portfolio.init(),
+      initializeMain,
       { once: true }
     );
   }
 
-  startPortfolio();
+  /* ---------------------------------------------------------
+     9. PUBLIC API
+     --------------------------------------------------------- */
+
+  window.PortfolioMain = {
+    refresh() {
+      initialized = false;
+      initializeMain();
+    },
+
+    updateHeader: updateHeaderState,
+
+    updateNavigation: initializeActiveNavigation
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      startMain,
+      { once: true }
+    );
+  } else {
+    startMain();
+  }
+
 })();
