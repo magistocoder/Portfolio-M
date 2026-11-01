@@ -1,8 +1,8 @@
 
 /* =========================================================
-   FILE: js/navigation.js
-   PROJECT: PORTFOLIO-M
-   PURPOSE: Responsive Liquid Glass Navigation
+   PORTFOLIO-M — RESPONSIVE NAVIGATION
+   Version: 5.0
+   Purpose: Mobile menu, accessibility and navigation control
    ========================================================= */
 
 (() => {
@@ -16,7 +16,6 @@
 
   function initializeNavigation() {
     const navbar = document.querySelector(".navbar");
-    const header = document.querySelector(".site-header");
 
     if (!navbar || navbar.dataset.navigationReady === "true") {
       return;
@@ -26,7 +25,7 @@
     const menu = navbar.querySelector(".nav-menu");
 
     if (!toggle || !menu) {
-      console.error("[Navigation] Required elements are missing.");
+      console.warn("[Navigation] Menu elements not found.");
       return;
     }
 
@@ -40,123 +39,77 @@
     toggle.setAttribute("aria-expanded", "false");
     toggle.setAttribute("aria-label", "Open navigation menu");
 
-    menu.setAttribute("aria-label", "Website navigation");
+    function closeMenu() {
+      navbar.classList.remove("is-open", "open", "active");
+      menu.classList.remove("is-open", "open", "active");
 
-    const desktopQuery = window.matchMedia(
-      `(min-width: ${BREAKPOINT}px)`
-    );
-
-    let isOpen = false;
-
-    // -----------------------------------------------------
-    // OPEN MENU
-    // -----------------------------------------------------
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open navigation menu");
+    }
 
     function openMenu() {
-      if (desktopQuery.matches) return;
-
-      isOpen = true;
-
       navbar.classList.add("is-open");
       menu.classList.add("is-open");
-
-      if (header) {
-        header.classList.add("menu-open");
-      }
-
-      document.body.classList.add("navigation-open");
 
       toggle.setAttribute("aria-expanded", "true");
       toggle.setAttribute("aria-label", "Close navigation menu");
     }
 
-    // -----------------------------------------------------
-    // CLOSE MENU
-    // -----------------------------------------------------
-
-    function closeMenu(returnFocus = false) {
-      isOpen = false;
-
-      navbar.classList.remove("is-open");
-      menu.classList.remove("is-open");
-
-      if (header) {
-        header.classList.remove("menu-open");
-      }
-
-      document.body.classList.remove("navigation-open");
-
-      toggle.setAttribute("aria-expanded", "false");
-      toggle.setAttribute("aria-label", "Open navigation menu");
-
-      if (returnFocus) {
-        toggle.focus();
-      }
-    }
-
-    // -----------------------------------------------------
-    // TOGGLE BUTTON
-    // -----------------------------------------------------
-
-    toggle.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+    function toggleMenu() {
+      const isOpen =
+        toggle.getAttribute("aria-expanded") === "true";
 
       if (isOpen) {
         closeMenu();
       } else {
         openMenu();
       }
+    }
+
+    // Mobile menu button.
+    toggle.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleMenu();
     });
 
-    // -----------------------------------------------------
-    // NAVIGATION LINKS
-    // -----------------------------------------------------
-
+    // Close after selecting a navigation link.
     menu.addEventListener("click", (event) => {
       const link = event.target.closest("a");
 
-      if (!link) return;
-
-      closeMenu();
-
-      // Allow normal browser navigation.
-    });
-
-    // -----------------------------------------------------
-    // CLOSE WHEN CLICKING OUTSIDE
-    // -----------------------------------------------------
-
-    document.addEventListener("click", (event) => {
-      if (!isOpen) return;
-
-      if (
-        !navbar.contains(event.target) &&
-        !menu.contains(event.target)
-      ) {
+      if (link) {
         closeMenu();
       }
     });
 
-    // -----------------------------------------------------
-    // ESCAPE KEY
-    // -----------------------------------------------------
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && isOpen) {
-        closeMenu(true);
+    // Close when clicking outside the navigation.
+    document.addEventListener("click", (event) => {
+      if (!navbar.contains(event.target)) {
+        closeMenu();
       }
     });
 
-    // -----------------------------------------------------
-    // RESPONSIVE BREAKPOINT
-    // -----------------------------------------------------
+    // Close with Escape.
+    document.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        toggle.getAttribute("aria-expanded") === "true"
+      ) {
+        closeMenu();
+        toggle.focus();
+      }
+    });
 
-    function handleBreakpointChange(event) {
+    // Reset menu when switching to desktop layout.
+    const desktopQuery = window.matchMedia(
+      `(min-width: ${BREAKPOINT}px)`
+    );
+
+    const handleBreakpointChange = (event) => {
       if (event.matches) {
         closeMenu();
       }
-    }
+    };
 
     if (desktopQuery.addEventListener) {
       desktopQuery.addEventListener(
@@ -167,29 +120,17 @@
       desktopQuery.addListener(handleBreakpointChange);
     }
 
-    // -----------------------------------------------------
-    // PAGE RESTORATION
-    // -----------------------------------------------------
-
-    window.addEventListener("pageshow", () => {
-      closeMenu();
-    });
-
-    // -----------------------------------------------------
-    // INITIALIZE
-    // -----------------------------------------------------
+    // Reset menu after browser restores the page.
+    window.addEventListener("pageshow", closeMenu);
 
     navbar.dataset.navigationReady = "true";
 
-    console.info("[Navigation] Liquid Glass navigation ready.");
+    console.info("[Navigation] Ready.");
   }
-
-  // -------------------------------------------------------
-  // COMPONENT LOADER COMPATIBILITY
-  // -------------------------------------------------------
 
   function startNavigation() {
     if (
+      document.body &&
       document.body.dataset.componentsLoaded === "true"
     ) {
       initializeNavigation();
@@ -204,5 +145,4 @@
   }
 
   startNavigation();
-
 })();
