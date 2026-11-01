@@ -1,15 +1,12 @@
 
 /* =========================================================
-   FILE: js/main.js
-   PROJECT: PORTFOLIO-M
-   PURPOSE: Main website initialization
-   DESIGN: Liquid Glass UI
+   PORTFOLIO-M — MAIN WEBSITE CONTROLLER
+   Version: 5.0
    ========================================================= */
 
 (() => {
   "use strict";
 
-  // Prevent duplicate execution if the file is loaded twice.
   if (window.PortfolioMainInitialized) return;
   window.PortfolioMainInitialized = true;
 
@@ -23,65 +20,50 @@
 
       this.setCurrentYear();
       this.setActiveNavigation();
-      this.initializeExternalLinks();
-      this.initializePageVisibility();
+      this.markPageReady();
 
-      document.documentElement.classList.add("portfolio-ready");
-      document.body.dataset.portfolioReady = "true";
+      window.dispatchEvent(
+        new CustomEvent("portfolio:ready")
+      );
 
-      console.info("[Portfolio] Main initialization complete.");
+      console.info("[Portfolio] Main controller ready.");
     },
-
-    // -----------------------------------------------------
-    // COPYRIGHT YEAR
-    // -----------------------------------------------------
 
     setCurrentYear() {
       const year = new Date().getFullYear();
 
-      document.querySelectorAll("[data-current-year]").forEach(
-        (element) => {
-          element.textContent = year;
-        }
-      );
+      document.querySelectorAll(
+        "[data-current-year], #current-year"
+      ).forEach((element) => {
+        element.textContent = year;
+      });
     },
-
-    // -----------------------------------------------------
-    // PATH NORMALIZATION
-    // -----------------------------------------------------
 
     normalizePath(path) {
       if (!path) return "/";
 
-      let normalized = path
-        .replace(/\/+/g, "/")
-        .replace(/\/index\.html$/i, "");
+      let normalized = path.replace(/\/+/g, "/");
 
-      if (normalized.length > 1) {
-        normalized = normalized.replace(/\/+$/, "");
+      // Treat /folder/index.html and /folder/ as equivalent.
+      normalized = normalized.replace(/\/index\.html$/i, "/");
+
+      if (!normalized.endsWith("/")) {
+        normalized += "/";
       }
 
-      return normalized || "/";
+      return normalized;
     },
 
-    // -----------------------------------------------------
-    // ACTIVE NAVIGATION
-    // -----------------------------------------------------
-
     setActiveNavigation() {
-      const currentURL = new URL(window.location.href);
-
       const currentPath = this.normalizePath(
-        currentURL.pathname
+        window.location.pathname
       );
 
-      const navigationLinks = document.querySelectorAll(
-        ".nav-menu a[href], " +
-        ".navbar-links a[href], " +
-        ".mobile-bottom-nav a[href]"
+      const links = document.querySelectorAll(
+        ".nav-menu a[href], .navbar-links a[href]"
       );
 
-      navigationLinks.forEach((link) => {
+      links.forEach((link) => {
         const href = link.getAttribute("href");
 
         if (
@@ -102,7 +84,10 @@
           return;
         }
 
-        if (linkURL.origin !== currentURL.origin) return;
+        // Only highlight links pointing to this website.
+        if (linkURL.origin !== window.location.origin) {
+          return;
+        }
 
         const linkPath = this.normalizePath(
           linkURL.pathname
@@ -120,76 +105,38 @@
       });
     },
 
-    // -----------------------------------------------------
-    // EXTERNAL LINK SECURITY
-    // -----------------------------------------------------
-
-    initializeExternalLinks() {
-      document.querySelectorAll('a[target="_blank"]').forEach(
-        (link) => {
-          const relValues = new Set(
-            (link.getAttribute("rel") || "")
-              .split(/\s+/)
-              .filter(Boolean)
-          );
-
-          relValues.add("noopener");
-          relValues.add("noreferrer");
-
-          link.setAttribute(
-            "rel",
-            Array.from(relValues).join(" ")
-          );
-        }
+    markPageReady() {
+      document.documentElement.classList.add(
+        "portfolio-ready"
       );
+
+      document.body.dataset.portfolioReady = "true";
     },
-
-    // -----------------------------------------------------
-    // PAGE VISIBILITY
-    // -----------------------------------------------------
-
-    initializePageVisibility() {
-      document.body.classList.add("page-loaded");
-
-      // Remove the loading state if the browser restores
-      // the page from its back-forward cache.
-      window.addEventListener("pageshow", () => {
-        document.body.classList.add("page-loaded");
-      });
-    },
-
-    // -----------------------------------------------------
-    // REFRESH API
-    // -----------------------------------------------------
 
     refresh() {
       this.setCurrentYear();
       this.setActiveNavigation();
-      this.initializeExternalLinks();
     }
   };
 
-  // Make the controller available to other project scripts.
   window.Portfolio = Portfolio;
-
-  // -------------------------------------------------------
-  // COMPONENT LOADING COMPATIBILITY
-  // -------------------------------------------------------
 
   function startPortfolio() {
     const readyPromise = window.portfolioComponentsReady;
 
-    if (readyPromise && typeof readyPromise.then === "function") {
+    if (
+      readyPromise &&
+      typeof readyPromise.then === "function"
+    ) {
       readyPromise
         .then(() => Portfolio.init())
         .catch((error) => {
           console.error(
-            "[Portfolio] Component loading error:",
+            "[Portfolio] Component loading failed:",
             error
           );
 
-          // Keep the main page functional even if a component
-          // fails to load.
+          // Keep the page usable even if a component fails.
           Portfolio.init();
         });
 
@@ -211,5 +158,4 @@
   }
 
   startPortfolio();
-
 })();
