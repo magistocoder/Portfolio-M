@@ -1,68 +1,107 @@
 
-<!-- FILE: components/hero.html -->
+<!-- =====================================================
+     PORTFOLIO-M — HERO SECTION
+     ===================================================== -->
 
-<section class="hero-section">
-  <div class="container hero-grid">
+<section class="hero-section" id="home">
 
-    <div class="hero-content">
+    <div class="container">
 
-      <p class="eyebrow">
-        <span class="status-dot"></span>
-        TECH CREATOR · UGC CREATOR
-      </p>
+        <div class="hero-grid">
 
-      <h1>
-        Exploring Tech.
-        <br>
-        Creating <span class="text-accent">Impact.</span>
-      </h1>
+            <!-- HERO CONTENT -->
+            <div class="hero-content">
 
-      <p class="hero-description">
-        Hey, I'm <strong>Abhinand A.S.</strong> — the creator behind
-        MAGISTO TECHY. I explore technology, discover digital tools,
-        and create content that makes innovation easier to understand.
-      </p>
+                <span class="eyebrow">
+                    <span class="status-dot"></span>
+                    TECH CONTENT CREATOR · UGC CREATOR
+                </span>
 
-      <div class="hero-actions">
-        <a href="pages/projects.html" class="btn btn-primary">
-          Explore My Work ↗
-        </a>
+                <h1>
+                    Creating at the
+                    intersection of
+                    <span class="text-gradient">
+                        Tech & Creativity.
+                    </span>
+                </h1>
 
-        <a href="pages/contact.html" class="btn btn-secondary">
-          Let's Connect
-        </a>
-      </div>
+                <p class="hero-description">
+                    Hey, I'm Abhinand. I create engaging technology
+                    content and product-focused videos that help
+                    audiences discover brands, gadgets and digital
+                    experiences.
+                </p>
 
-      <div class="hero-meta">
-        <span>Based in Kerala, India</span>
-        <span class="meta-divider"></span>
-        <span>Available for collaborations</span>
-      </div>
+                <div class="hero-actions">
 
-    </div>
+                    <a
+                        href="pages/collaborations.html"
+                        class="btn btn-primary"
+                    >
+                        Work With Me
+                        <span aria-hidden="true">↗</span>
+                    </a>
 
-    <div class="hero-visual">
+                    <a
+                        href="pages/projects.html"
+                        class="btn btn-outline"
+                    >
+                        Explore My Work
+                        <span aria-hidden="true">↘</span>
+                    </a>
 
-      <div class="hero-image-frame">
-        <img
-          src="assets/images/assets/images/portrait.png"
-          alt="Abhinand A.S. — MAGISTO TECHY creator"
-          fetchpriority="high"
-          loading="eager"
-        >
-      </div>
+                </div>
 
-      <div class="hero-floating-card">
-        <span class="floating-card-icon">✳</span>
-        <div>
-          <strong>Creative Mindset</strong>
-          <small>Technology · Content · Innovation</small>
+                <div class="hero-meta">
+
+                    <span>Based in Kerala, India</span>
+
+                    <span class="meta-divider"></span>
+
+                    <span>Available for Collaborations</span>
+
+                </div>
+
+            </div>
+
+
+            <!-- HERO PORTRAIT -->
+            <div class="hero-visual">
+
+                <div class="hero-image-frame">
+
+                    <img
+                        src="assets/images/profile.png"
+                        alt="Abhinand — Technology and UGC Content Creator"
+                        width="600"
+                        height="750"
+                        fetchpriority="high"
+                        onerror="this.style.display='none'; this.parentElement.classList.add('portrait-placeholder');"
+                    >
+
+                    <div class="portrait-fallback">
+                        <span class="portrait-initial">A.</span>
+                        <span>ABHINAND</span>
+                    </div>
+
+                </div>
+
+                <div class="hero-floating-card">
+
+                    <span class="floating-card-icon"
+                          aria-hidden="true">✦</span>
+
+                    <div>
+                        <strong>Creative Technology</strong>
+                        <small>Content · UGC · Storytelling</small>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-      </div>
-
-      <div class="hero-decoration" aria-hidden="true"></div>
 
     </div>
 
-  </div>
 </section>
