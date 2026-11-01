@@ -1,20 +1,23 @@
 
 /* =========================================================
    PORTFOLIO-M — COMPONENT LOADER
-   Version: 4.0
-   Purpose:
-   - Load shared HTML components
-   - Resolve paths for homepage and inner pages
-   - Prevent duplicate script loading
-   - Initialize scripts in the correct order
+   Version: 5.0
+   Purpose: Load shared HTML components and JavaScript files.
    ========================================================= */
 
 (() => {
     "use strict";
 
     // Prevent duplicate initialization.
-    if (window.PortfolioLoaderInitialized) return;
+    if (window.PortfolioLoaderInitialized) {
+        return;
+    }
+
     window.PortfolioLoaderInitialized = true;
+
+    // -----------------------------------------------------
+    // CONFIGURATION
+    // -----------------------------------------------------
 
     const ROOT = document.body.dataset.root || "./";
 
@@ -22,19 +25,21 @@
         ? ROOT
         : `${ROOT}/`;
 
-    const COMPONENT_FOLDER = "components/";
+    const COMPONENT_VERSION = "5.0";
 
-    const SCRIPT_FILES = [
+    const COMPONENT_SELECTOR = "[data-component]";
+
+    const COMPONENTS_PATH = "components/";
+
+    const SCRIPTS = [
         "js/navigation.js",
         "js/animations.js",
         "js/interactions.js",
         "js/main.js"
     ];
 
-    const loadedScripts = new Set();
-
     // -----------------------------------------------------
-    // PATH HANDLING
+    // PATH NORMALIZATION
     // -----------------------------------------------------
 
     function normalizePath(value) {
@@ -44,13 +49,14 @@
 
         const path = value.trim();
 
+        // Preserve external links, anchors and absolute paths.
         if (
             path.startsWith("#") ||
             path.startsWith("//") ||
             path.startsWith("/") ||
             /^[a-z][a-z\d+.-]*:/i.test(path)
         ) {
-            return value;
+            return path;
         }
 
         const cleanPath = path.replace(
@@ -60,6 +66,10 @@
 
         return `${WEBSITE_ROOT}${cleanPath}`;
     }
+
+    // -----------------------------------------------------
+    // NORMALIZE COMPONENT LINKS AND MEDIA
+    // -----------------------------------------------------
 
     function normalizeComponentPaths(fragment) {
         const attributes = [
@@ -72,11 +82,15 @@
 
         fragment.querySelectorAll("*").forEach(element => {
             attributes.forEach(attribute => {
-                if (!element.hasAttribute(attribute)) return;
+                if (!element.hasAttribute(attribute)) {
+                    return;
+                }
 
                 const original = element.getAttribute(attribute);
 
-                if (!original) return;
+                if (!original) {
+                    return;
+                }
 
                 element.setAttribute(
                     attribute,
@@ -87,7 +101,7 @@
     }
 
     // -----------------------------------------------------
-    // COMPONENT LOADING
+    // LOAD ONE COMPONENT
     // -----------------------------------------------------
 
     async function loadComponent(slot) {
@@ -106,14 +120,19 @@
         }
 
         const url =
-            `${WEBSITE_ROOT}${COMPONENT_FOLDER}${name}.html`;
+            `${WEBSITE_ROOT}${COMPONENTS_PATH}${name}.html?v=${COMPONENT_VERSION}`;
 
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    Accept: "text/html"
+                }
+            });
 
             if (!response.ok) {
                 throw new Error(
-                    `HTTP ${response.status} while loading ${name}`
+                    `HTTP ${response.status}: ${response.statusText}`
                 );
             }
 
@@ -146,12 +165,20 @@
                 error
             );
 
-            slot.innerHTML = `
-                <div class="component-error" role="alert">
-                    <p>This section could not be loaded.</p>
-                    <small>${name}</small>
-                </div>
-            `;
+            const errorBox = document.createElement("div");
+
+            errorBox.className = "component-error";
+            errorBox.setAttribute("role", "alert");
+
+            const message = document.createElement("p");
+            message.textContent = "Unable to load this section.";
+
+            const label = document.createElement("small");
+            label.textContent = name;
+
+            errorBox.append(message, label);
+
+            slot.replaceChildren(errorBox);
 
             slot.dataset.componentLoaded = "false";
 
@@ -163,26 +190,30 @@
         }
     }
 
+    // -----------------------------------------------------
+    // LOAD ALL COMPONENTS
+    // -----------------------------------------------------
+
     async function loadAllComponents() {
-        const slots = [
-            ...document.querySelectorAll("[data-component]")
-        ];
+        const slots = Array.from(
+            document.querySelectorAll(COMPONENT_SELECTOR)
+        );
 
         const results = await Promise.all(
             slots.map(loadComponent)
         );
 
         const successful = results.filter(
-            item => item.success
+            result => result.success
         ).length;
 
         const failed = results.length - successful;
 
         const details = {
+            results,
             total: results.length,
             successful,
-            failed,
-            results
+            failed
         };
 
         document.body.dataset.componentsLoaded = "true";
@@ -201,120 +232,56 @@
     }
 
     // -----------------------------------------------------
-    // DUPLICATE SCRIPT DETECTION
-    // -----------------------------------------------------
-
-    function findExistingScript(path) {
-        const expectedPath = new URL(
-            `${WEBSITE_ROOT}${path}`,
-            document.baseURI
-        ).pathname;
-
-        return [...document.scripts].find(script => {
-            if (!script.src) return false;
-
-            try {
-                return new URL(script.src).pathname === expectedPath;
-            } catch {
-                return false;
-            }
-        });
-    }
-
-    // -----------------------------------------------------
-    // SCRIPT LOADING
+    // LOAD JAVASCRIPT FILES
     // -----------------------------------------------------
 
     function loadScript(path) {
         return new Promise((resolve, reject) => {
-            if (loadedScripts.has(path)) {
-                resolve(path);
-                return;
-            }
-
-            const existingScript = findExistingScript(path);
-
-            if (existingScript) {
-                if (existingScript.dataset.portfolioLoaded === "true") {
-                    loadedScripts.add(path);
-                    resolve(path);
-                    return;
-                }
-
-                if (existingScript.dataset.portfolioLoading === "true") {
-                    existingScript.addEventListener(
-                        "load",
-                        () => {
-                            loadedScripts.add(path);
-                            resolve(path);
-                        },
-                        { once: true }
-                    );
-
-                    existingScript.addEventListener(
-                        "error",
-                        () => reject(
-                            new Error(`Script failed: ${path}`)
-                        ),
-                        { once: true }
-                    );
-
-                    return;
-                }
-
-                // A script already included in the HTML will execute
-                // independently. Do not inject another copy.
-                loadedScripts.add(path);
-                resolve(path);
-                return;
-            }
-
             const script = document.createElement("script");
 
-            script.src = `${WEBSITE_ROOT}${path}`;
+            script.src = `${WEBSITE_ROOT}${path}?v=${COMPONENT_VERSION}`;
+
             script.async = false;
-            script.dataset.portfolioLoading = "true";
 
             script.onload = () => {
-                script.dataset.portfolioLoaded = "true";
-
-                loadedScripts.add(path);
-
                 console.info(
                     `[Portfolio] Script loaded: ${path}`
                 );
 
-                resolve(path);
+                resolve({
+                    path,
+                    success: true
+                });
             };
 
             script.onerror = () => {
-                reject(
-                    new Error(`Unable to load script: ${path}`)
+                const error = new Error(
+                    `Unable to load script: ${path}`
                 );
+
+                console.error("[Portfolio]", error);
+
+                reject(error);
             };
 
             document.body.appendChild(script);
         });
     }
 
+    // -----------------------------------------------------
+    // LOAD SCRIPTS SEQUENTIALLY
+    // -----------------------------------------------------
+
     async function loadAllScripts() {
         const results = [];
 
-        for (const path of SCRIPT_FILES) {
+        for (const path of SCRIPTS) {
             try {
-                await loadScript(path);
+                const result = await loadScript(path);
 
-                results.push({
-                    path,
-                    success: true
-                });
+                results.push(result);
 
             } catch (error) {
-                console.error(
-                    "[Portfolio] Script loading error:",
-                    error
-                );
-
                 results.push({
                     path,
                     success: false,
@@ -327,7 +294,7 @@
     }
 
     // -----------------------------------------------------
-    // INITIALIZATION
+    // INITIALIZE PORTFOLIO
     // -----------------------------------------------------
 
     async function initializePortfolio() {
@@ -335,51 +302,58 @@
             "[Portfolio] Initialization started."
         );
 
-        const components = await loadAllComponents();
+        try {
+            // First: Load HTML components.
+            const components = await loadAllComponents();
 
-        const scripts = await loadAllScripts();
+            // Second: Load JavaScript files.
+            const scripts = await loadAllScripts();
 
-        const successfulScripts = scripts.filter(
-            item => item.success
-        ).length;
+            const successfulScripts = scripts.filter(
+                script => script.success
+            ).length;
 
-        const failedScripts = scripts.length - successfulScripts;
+            const details = {
+                components,
+                scripts,
+                successfulScripts,
+                totalScripts: scripts.length
+            };
 
-        const details = {
-            components,
-            scripts,
-            successfulScripts,
-            failedScripts
-        };
+            document.body.dataset.portfolioReady = "true";
 
-        document.body.dataset.portfolioReady =
-            failedScripts === 0 ? "true" : "false";
+            document.dispatchEvent(
+                new CustomEvent("portfolio:ready", {
+                    detail: details
+                })
+            );
 
-        document.dispatchEvent(
-            new CustomEvent("portfolio:ready", {
-                detail: details
-            })
-        );
+            console.info(
+                "[Portfolio] Initialization completed.",
+                details
+            );
 
-        console.info(
-            "[Portfolio] Initialization finished.",
-            details
-        );
+            return details;
 
-        return details;
+        } catch (error) {
+            document.body.dataset.portfolioReady = "false";
+
+            console.error(
+                "[Portfolio] Initialization failed:",
+                error
+            );
+
+            return {
+                success: false,
+                error: error.message
+            };
+        }
     }
 
     // -----------------------------------------------------
-    // PUBLIC API
+    // START
     // -----------------------------------------------------
 
-    window.PortfolioLoader = {
-        initialize: initializePortfolio,
-        loadComponent,
-        loadAllComponents
-    };
-
-    window.portfolioComponentsReady =
-        initializePortfolio();
+    window.portfolioComponentsReady = initializePortfolio();
 
 })();
