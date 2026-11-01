@@ -1,158 +1,192 @@
 
 /* =========================================================
-   PORTFOLIO-M — GENERAL INTERACTIONS
-   Version: 5.0
+   PORTFOLIO-M — INTERACTIONS
+   Version: 6.0
+   Handles:
+   - Smooth internal navigation
+   - Back-to-top controls
+   - Automatic footer year
+   - Scroll-based visibility
+   - Component-ready initialization
    ========================================================= */
 
 (() => {
   "use strict";
 
   if (window.PortfolioInteractionsInitialized) return;
+
   window.PortfolioInteractionsInitialized = true;
 
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  );
+  let initialized = false;
+  let scrollHandlerAttached = false;
 
-  function updateCurrentYear() {
-    const year = new Date().getFullYear();
+  const prefersReducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const scrollToElement = (element) => {
+    if (!element) return;
+
+    element.scrollIntoView({
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+      block: "start"
+    });
+  };
+
+  /* ---------------------------------------------------------
+     1. AUTOMATIC FOOTER YEAR
+     --------------------------------------------------------- */
+
+  function updateFooterYear() {
+    const currentYear = new Date().getFullYear();
 
     document.querySelectorAll(
-      "[data-current-year], #current-year"
+      "#current-year, [data-current-year]"
     ).forEach((element) => {
-      element.textContent = year;
+      element.textContent = currentYear;
     });
   }
 
-  function scrollToTop() {
-    window.scrollTo({
-      top: 0,
-      behavior: reducedMotion.matches ? "auto" : "smooth"
+  /* ---------------------------------------------------------
+     2. BACK TO TOP
+     --------------------------------------------------------- */
+
+  function updateBackToTopVisibility() {
+    const isVisible = window.scrollY > 300;
+
+    document.querySelectorAll(
+      "[data-back-to-top], .back-to-top"
+    ).forEach((button) => {
+      button.classList.toggle("is-visible", isVisible);
+      button.setAttribute("aria-hidden", String(!isVisible));
+
+      if ("tabIndex" in button) {
+        button.tabIndex = isVisible ? 0 : -1;
+      }
     });
   }
 
   function initializeBackToTop() {
-    document.querySelectorAll(
-      "[data-back-to-top]"
-    ).forEach((button) => {
-      if (button.dataset.backToTopReady === "true") return;
+    const controls = document.querySelectorAll(
+      "[data-back-to-top], .back-to-top"
+    );
 
-      button.dataset.backToTopReady = "true";
+    controls.forEach((control) => {
+      if (control.dataset.interactionReady === "true") return;
 
-      // Hide until the visitor scrolls down.
-      const updateVisibility = () => {
-        const visible = window.scrollY > 400;
+      control.dataset.interactionReady = "true";
 
-        button.classList.toggle("is-visible", visible);
+      control.addEventListener("click", (event) => {
+        const href = control.getAttribute("href");
 
-        if (button.tagName === "BUTTON") {
-          button.setAttribute(
-            "aria-hidden",
-            String(!visible)
-          );
+        if (
+          control.tagName === "BUTTON" ||
+          href === "#top" ||
+          href === "#"
+        ) {
+          event.preventDefault();
 
-          button.tabIndex = visible ? 0 : -1;
+          window.scrollTo({
+            top: 0,
+            behavior: prefersReducedMotion() ? "auto" : "smooth"
+          });
         }
-      };
-
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        scrollToTop();
       });
+    });
 
+    updateBackToTopVisibility();
+
+    if (!scrollHandlerAttached) {
       window.addEventListener(
         "scroll",
-        updateVisibility,
+        updateBackToTopVisibility,
         { passive: true }
       );
 
-      updateVisibility();
-    });
-  }
-
-  function initializeSmoothScrolling() {
-    if (document.body.dataset.smoothScrollReady === "true") {
-      return;
+      scrollHandlerAttached = true;
     }
+  }
 
-    document.body.dataset.smoothScrollReady = "true";
+  /* ---------------------------------------------------------
+     3. SMOOTH INTERNAL NAVIGATION
+     --------------------------------------------------------- */
 
-    document.addEventListener("click", (event) => {
-      const link = event.target.closest(
-        'a[href^="#"]'
-      );
+  function initializeSmoothNavigation() {
+    document.querySelectorAll('a[href^="#"]').forEach((link) => {
+      if (link.dataset.smoothScrollReady === "true") return;
 
-      if (!link) return;
+      if (link.matches("[data-back-to-top], .back-to-top")) return;
 
-      const href = link.getAttribute("href");
+      link.dataset.smoothScrollReady = "true";
 
-      if (!href || href === "#") return;
+      link.addEventListener("click", (event) => {
+        const href = link.getAttribute("href");
 
-      // Handle top links even if no #top element exists.
-      if (href === "#top") {
+        if (!href || href === "#") return;
+
+        let target;
+
+        try {
+          target = document.querySelector(href);
+        } catch (error) {
+          return;
+        }
+
+        if (!target) return;
+
         event.preventDefault();
-        scrollToTop();
-        return;
-      }
+        scrollToElement(target);
 
-      let target;
-
-      try {
-        target = document.querySelector(href);
-      } catch {
-        return;
-      }
-
-      if (!target) return;
-
-      event.preventDefault();
-
-      target.scrollIntoView({
-        behavior: reducedMotion.matches ? "auto" : "smooth",
-        block: "start"
+        if (target.id) {
+          history.replaceState(null, "", `#${target.id}`);
+        }
       });
-
-      if (window.history?.replaceState) {
-        window.history.replaceState(null, "", href);
-      }
     });
   }
+
+  /* ---------------------------------------------------------
+     4. EXTERNAL LINK SECURITY
+     --------------------------------------------------------- */
 
   function secureExternalLinks() {
-    document.querySelectorAll(
-      'a[target="_blank"]'
-    ).forEach((link) => {
-      const rel = new Set(
+    document.querySelectorAll('a[target="_blank"]').forEach((link) => {
+      const relValues = new Set(
         (link.getAttribute("rel") || "")
           .split(/\s+/)
           .filter(Boolean)
       );
 
-      rel.add("noopener");
-      rel.add("noreferrer");
+      relValues.add("noopener");
+      relValues.add("noreferrer");
 
-      link.setAttribute(
-        "rel",
-        Array.from(rel).join(" ")
-      );
+      link.setAttribute("rel", [...relValues].join(" "));
     });
   }
 
+  /* ---------------------------------------------------------
+     5. MAIN INITIALIZATION
+     --------------------------------------------------------- */
+
   function initializeInteractions() {
-    updateCurrentYear();
+    if (initialized) return;
+
+    initialized = true;
+
+    updateFooterYear();
     initializeBackToTop();
-    initializeSmoothScrolling();
+    initializeSmoothNavigation();
     secureExternalLinks();
 
-    document.body.dataset.interactionsReady = "true";
-
-    console.info("[Portfolio] Interactions initialized.");
+    document.documentElement.classList.add(
+      "interactions-ready"
+    );
   }
 
+  /* ---------------------------------------------------------
+     6. COMPONENT LOADER COMPATIBILITY
+     --------------------------------------------------------- */
+
   function start() {
-    if (
-      document.body.dataset.componentsLoaded === "true"
-    ) {
+    if (document.body?.dataset.componentsLoaded === "true") {
       initializeInteractions();
       return;
     }
@@ -164,13 +198,25 @@
     );
   }
 
+  /* ---------------------------------------------------------
+     7. PUBLIC REFRESH API
+     --------------------------------------------------------- */
+
   window.PortfolioInteractions = {
     refresh() {
-      updateCurrentYear();
-      initializeBackToTop();
-      secureExternalLinks();
-    }
+      initialized = false;
+      initializeInteractions();
+    },
+
+    updateBackToTop: updateBackToTopVisibility
   };
 
-  start();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start, {
+      once: true
+    });
+  } else {
+    start();
+  }
+
 })();
